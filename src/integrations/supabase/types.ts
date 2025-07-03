@@ -9,7 +9,86 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      categorias: {
+        Row: {
+          created_at: string
+          id: string
+          nome: string
+          tipo_profissional: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nome: string
+          tipo_profissional: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nome?: string
+          tipo_profissional?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          ativo: boolean
+          categoria_id: string
+          cidade: string
+          created_at: string
+          descricao: string | null
+          foto_perfil: string | null
+          id: string
+          nome: string
+          telefone: string
+          tipo_profissional: string
+          updated_at: string
+          user_id: string
+          visualizacoes: number
+          whatsapp: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          categoria_id: string
+          cidade: string
+          created_at?: string
+          descricao?: string | null
+          foto_perfil?: string | null
+          id?: string
+          nome: string
+          telefone: string
+          tipo_profissional: string
+          updated_at?: string
+          user_id: string
+          visualizacoes?: number
+          whatsapp?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          categoria_id?: string
+          cidade?: string
+          created_at?: string
+          descricao?: string | null
+          foto_perfil?: string | null
+          id?: string
+          nome?: string
+          telefone?: string
+          tipo_profissional?: string
+          updated_at?: string
+          user_id?: string
+          visualizacoes?: number
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "categorias"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
