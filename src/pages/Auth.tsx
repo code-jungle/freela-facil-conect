@@ -106,23 +106,13 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      // Criar usuário na autenticação
+      // Criar usuário na autenticação com dados no metadata
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: signupData.email,
         password: signupData.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`
-        }
-      });
-
-      if (authError) throw authError;
-
-      if (authData.user) {
-        // Criar perfil do profissional
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            user_id: authData.user.id,
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+          data: {
             nome: signupData.nome,
             telefone: signupData.telefone,
             whatsapp: signupData.whatsapp || signupData.telefone,
@@ -131,29 +121,30 @@ const Auth = () => {
             categoria_id: signupData.categoria_id,
             descricao: signupData.descricao,
             foto_perfil: signupData.foto_perfil,
-          });
+          }
+        }
+      });
 
-        if (profileError) throw profileError;
+      if (authError) throw authError;
 
-        toast({
-          title: "Cadastro realizado com sucesso!",
-          description: "Verifique seu email para confirmar a conta.",
-        });
+      toast({
+        title: "Cadastro realizado com sucesso!",
+        description: "Verifique seu email para confirmar a conta. O perfil será criado automaticamente após a confirmação.",
+      });
 
-        // Limpar formulário
-        setSignupData({
-          email: "",
-          password: "",
-          nome: "",
-          telefone: "",
-          whatsapp: "",
-          cidade: "",
-          tipo_profissional: "",
-          categoria_id: "",
-          descricao: "",
-          foto_perfil: ""
-        });
-      }
+      // Limpar formulário
+      setSignupData({
+        email: "",
+        password: "",
+        nome: "",
+        telefone: "",
+        whatsapp: "",
+        cidade: "",
+        tipo_profissional: "",
+        categoria_id: "",
+        descricao: "",
+        foto_perfil: ""
+      });
     } catch (error: any) {
       toast({
         title: "Erro no cadastro",
