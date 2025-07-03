@@ -65,7 +65,7 @@ const Auth = () => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate('/dashboard');
+        navigate('/profile');
       }
     };
 
@@ -89,7 +89,7 @@ const Auth = () => {
         description: "Redirecionando para o painel...",
       });
 
-      navigate('/dashboard');
+      navigate('/profile');
     } catch (error: any) {
       toast({
         title: "Erro no login",
@@ -111,7 +111,7 @@ const Auth = () => {
         email: signupData.email,
         password: signupData.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
+          emailRedirectTo: `${window.location.origin}/profile`,
           data: {
             nome: signupData.nome,
             telefone: signupData.telefone,
