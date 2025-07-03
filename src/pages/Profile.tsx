@@ -29,6 +29,10 @@ interface ProfileData {
   foto_perfil: string | null;
 }
 
+interface EditData extends Partial<ProfileData> {
+  foto_perfil_file?: File | null;
+}
+
 const Profile = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -37,7 +41,7 @@ const Profile = () => {
   const [editing, setEditing] = useState(false);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
-  const [editData, setEditData] = useState<Partial<ProfileData>>({});
+  const [editData, setEditData] = useState<EditData>({});
 
   // Verificar autenticação e buscar dados
   useEffect(() => {
@@ -100,6 +104,30 @@ const Profile = () => {
     setSaving(true);
     
     try {
+      let fotoUrl = editData.foto_perfil;
+      
+      // Upload da nova foto se foi selecionada
+      if (editData.foto_perfil_file) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) throw new Error('Usuário não autenticado');
+
+        const fileExt = editData.foto_perfil_file.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `${session.user.id}/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(filePath, editData.foto_perfil_file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(filePath);
+
+        fotoUrl = publicUrl;
+      }
+
       const { error } = await supabase
         .from('profiles')
         .update({
@@ -110,13 +138,14 @@ const Profile = () => {
           tipo_profissional: editData.tipo_profissional,
           categoria_id: editData.categoria_id,
           descricao: editData.descricao,
-          foto_perfil: editData.foto_perfil,
+          foto_perfil: fotoUrl,
         })
         .eq('id', profileData.id);
 
       if (error) throw error;
 
-      setProfileData({ ...profileData, ...editData } as ProfileData);
+      setProfileData({ ...profileData, ...editData, foto_perfil: fotoUrl } as ProfileData);
+      setEditData({ ...editData, foto_perfil: fotoUrl, foto_perfil_file: null });
       setEditing(false);
       
       toast({
@@ -308,15 +337,29 @@ const Profile = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="foto">URL da foto de perfil</Label>
-              <Input
-                id="foto"
-                type="url"
-                value={editing ? editData.foto_perfil || '' : profileData.foto_perfil || ''}
-                onChange={(e) => setEditData({...editData, foto_perfil: e.target.value})}
-                disabled={!editing}
-                placeholder="https://exemplo.com/foto.jpg (opcional)"
-              />
+              <Label htmlFor="foto">Foto de perfil</Label>
+              {editing ? (
+                <>
+                  <Input
+                    id="foto"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] || null;
+                      setEditData({...editData, foto_perfil_file: file});
+                    }}
+                  />
+                  {editData.foto_perfil_file && (
+                    <p className="text-sm text-muted-foreground">
+                      Arquivo selecionado: {editData.foto_perfil_file.name}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <div className="text-sm text-muted-foreground">
+                  {profileData.foto_perfil ? "Foto carregada" : "Nenhuma foto"}
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">

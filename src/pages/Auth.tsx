@@ -39,7 +39,7 @@ const Auth = () => {
     tipo_profissional: "",
     categoria_id: "",
     descricao: "",
-    foto_perfil: ""
+    foto_perfil: null as File | null
   });
 
   // Buscar categorias
@@ -106,6 +106,27 @@ const Auth = () => {
     setLoading(true);
 
     try {
+      let fotoUrl = "";
+      
+      // Upload da foto se foi selecionada
+      if (signupData.foto_perfil) {
+        const fileExt = signupData.foto_perfil.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `temp/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(filePath, signupData.foto_perfil);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(filePath);
+
+        fotoUrl = publicUrl;
+      }
+
       // Criar usuário na autenticação com dados no metadata
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: signupData.email,
@@ -120,7 +141,7 @@ const Auth = () => {
             tipo_profissional: signupData.tipo_profissional,
             categoria_id: signupData.categoria_id,
             descricao: signupData.descricao,
-            foto_perfil: signupData.foto_perfil,
+            foto_perfil: fotoUrl,
           }
         }
       });
@@ -143,7 +164,7 @@ const Auth = () => {
         tipo_profissional: "",
         categoria_id: "",
         descricao: "",
-        foto_perfil: ""
+        foto_perfil: null
       });
     } catch (error: any) {
       toast({
@@ -355,14 +376,21 @@ const Auth = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="foto">URL da foto de perfil</Label>
+                    <Label htmlFor="foto">Foto de perfil</Label>
                     <Input
                       id="foto"
-                      type="url"
-                      value={signupData.foto_perfil}
-                      onChange={(e) => setSignupData({...signupData, foto_perfil: e.target.value})}
-                      placeholder="https://exemplo.com/foto.jpg (opcional)"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] || null;
+                        setSignupData({...signupData, foto_perfil: file});
+                      }}
                     />
+                    {signupData.foto_perfil && (
+                      <p className="text-sm text-muted-foreground">
+                        Arquivo selecionado: {signupData.foto_perfil.name}
+                      </p>
+                    )}
                   </div>
 
                   <Button type="submit" className="w-full" disabled={loading}>
