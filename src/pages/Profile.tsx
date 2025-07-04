@@ -104,10 +104,22 @@ const Profile = () => {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      toast({
+        title: "Logout realizado",
+        description: "Você foi deslogado com sucesso.",
+      });
+      
       navigate('/');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao fazer logout:', error);
+      toast({
+        title: "Erro no logout",
+        description: error.message || "Tente novamente.",
+        variant: "destructive",
+      });
     }
   };
 

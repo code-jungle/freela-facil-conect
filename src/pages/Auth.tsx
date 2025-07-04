@@ -64,9 +64,10 @@ const Auth = () => {
   useEffect(() => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        navigate('/profile');
-      }
+      // Removi o redirecionamento automático - deixar o usuário escolher
+      // if (session) {
+      //   navigate('/profile');
+      // }
     };
 
     checkUser();

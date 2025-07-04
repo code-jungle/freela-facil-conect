@@ -3,9 +3,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, MapPin, User, Phone } from "lucide-react";
+import { Search, MapPin, User, Phone, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface Profile {
   id: string;
@@ -28,6 +28,7 @@ interface Categoria {
 }
 
 const Index = () => {
+  const navigate = useNavigate();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [filteredProfiles, setFilteredProfiles] = useState<Profile[]>([]);
@@ -37,6 +38,24 @@ const Index = () => {
   const [selectedCidade, setSelectedCidade] = useState<string>("todas");
   const [cidades, setCidades] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
+
+  // Verificar autenticação
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+    };
+
+    checkAuth();
+
+    // Listener para mudanças na autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Buscar dados iniciais
   useEffect(() => {
@@ -87,6 +106,14 @@ const Index = () => {
 
     fetchData();
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
+  };
 
   // Aplicar filtros
   useEffect(() => {
@@ -154,12 +181,27 @@ const Index = () => {
               <p className="text-muted-foreground">Conectando talentos com oportunidades</p>
             </div>
             <div className="flex gap-2">
-              <Link to="/auth">
-                <Button variant="outline">
-                  <User className="w-4 h-4 mr-2" />
-                  Entrar
-                </Button>
-              </Link>
+              {user ? (
+                <>
+                  <Link to="/profile">
+                    <Button variant="outline">
+                      <User className="w-4 h-4 mr-2" />
+                      Meu Perfil
+                    </Button>
+                  </Link>
+                  <Button variant="outline" onClick={handleLogout}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sair
+                  </Button>
+                </>
+              ) : (
+                <Link to="/auth">
+                  <Button variant="outline">
+                    <User className="w-4 h-4 mr-2" />
+                    Entrar
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>
