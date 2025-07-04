@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Edit, Save, LogOut, ArrowLeft } from "lucide-react";
+import { User, Edit, Save, LogOut, ArrowLeft, Upload, Camera } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
@@ -42,6 +42,7 @@ const Profile = () => {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [editData, setEditData] = useState<EditData>({});
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   // Verificar autenticação e buscar dados
   useEffect(() => {
@@ -123,6 +124,17 @@ const Profile = () => {
     }
   };
 
+  const handlePhotoSelect = (file: File) => {
+    setEditData({...editData, foto_perfil_file: file});
+    
+    // Criar preview da imagem
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setPhotoPreview(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSave = async () => {
     if (!profileData) return;
     
@@ -171,6 +183,7 @@ const Profile = () => {
 
       setProfileData({ ...profileData, ...editData, foto_perfil: fotoUrl } as ProfileData);
       setEditData({ ...editData, foto_perfil: fotoUrl, foto_perfil_file: null });
+      setPhotoPreview(null);
       setEditing(false);
       
       toast({
@@ -241,15 +254,33 @@ const Profile = () => {
 
         <Card>
           <CardHeader className="text-center">
-            <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-              {profileData.foto_perfil ? (
-                <img 
-                  src={profileData.foto_perfil} 
-                  alt={profileData.nome}
-                  className="w-20 h-20 rounded-full object-cover"
-                />
-              ) : (
-                <User className="w-10 h-10 text-primary-foreground" />
+            <div className="relative w-24 h-24 mx-auto mb-4 group">
+              <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center overflow-hidden">
+                {(photoPreview || profileData.foto_perfil) ? (
+                  <img 
+                    src={photoPreview || profileData.foto_perfil} 
+                    alt={profileData.nome}
+                    className="w-24 h-24 rounded-full object-cover"
+                  />
+                ) : (
+                  <User className="w-12 h-12 text-primary-foreground" />
+                )}
+              </div>
+              
+              {editing && (
+                <label htmlFor="foto-upload" className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                  <Camera className="w-6 h-6 text-white" />
+                  <input
+                    id="foto-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handlePhotoSelect(file);
+                    }}
+                  />
+                </label>
               )}
             </div>
             <CardTitle className="text-2xl">{profileData.nome}</CardTitle>
@@ -362,24 +393,31 @@ const Profile = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="foto">Foto de perfil</Label>
+              <Label htmlFor="foto-alt">Upload de foto</Label>
               {editing ? (
-                <>
-                  <Input
-                    id="foto"
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0] || null;
-                      setEditData({...editData, foto_perfil_file: file});
-                    }}
-                  />
+                <div className="space-y-3">
+                  <label htmlFor="foto-alt-upload" className="flex items-center justify-center gap-2 p-4 border-2 border-dashed border-muted-foreground/25 rounded-lg hover:border-primary/50 transition-colors cursor-pointer group">
+                    <Upload className="w-5 h-5 text-muted-foreground group-hover:text-primary" />
+                    <span className="text-sm text-muted-foreground group-hover:text-primary">
+                      Clique para selecionar uma foto
+                    </span>
+                    <input
+                      id="foto-alt-upload"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handlePhotoSelect(file);
+                      }}
+                    />
+                  </label>
                   {editData.foto_perfil_file && (
                     <p className="text-sm text-muted-foreground">
-                      Arquivo selecionado: {editData.foto_perfil_file.name}
+                      ✓ Arquivo selecionado: {editData.foto_perfil_file.name}
                     </p>
                   )}
-                </>
+                </div>
               ) : (
                 <div className="text-sm text-muted-foreground">
                   {profileData.foto_perfil ? "Foto carregada" : "Nenhuma foto"}
