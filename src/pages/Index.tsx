@@ -224,9 +224,9 @@ const Index = () => {
                 <div className="w-12 h-12 gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
                   <Users className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="font-semibold mb-2">Profissionais Verificados</h3>
+                <h3 className="font-semibold mb-2">Facilidade na Busca</h3>
                 <p className="text-sm text-muted-foreground">
-                  Todos os perfis são verificados para garantir qualidade e confiabilidade
+                  Encontre profissionais rapidamente com nossos filtros inteligentes
                 </p>
               </CardContent>
             </Card>
