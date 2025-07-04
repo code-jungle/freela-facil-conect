@@ -222,7 +222,7 @@ const Index = () => {
             <Card className="gradient-card border-0 shadow-lg">
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-6 h-6 text-white" />
+                  <Search className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="font-semibold mb-2">Facilidade na Busca</h3>
                 <p className="text-sm text-muted-foreground">
