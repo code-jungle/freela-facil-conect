@@ -131,7 +131,7 @@ const Auth = () => {
         title: "Cadastro realizado com sucesso!",
         description: "Redirecionando para o painel..."
       });
-      
+
       // Redirecionar automaticamente após cadastro bem-sucedido
       navigate('/profile');
 
@@ -198,29 +198,12 @@ const Auth = () => {
                 <form onSubmit={handleLogin} className="space-y-6">
                   <div className="space-y-3">
                     <Label htmlFor="email">Email</Label>
-                    <Input 
-                      id="email" 
-                      type="email" 
-                      value={loginEmail} 
-                      onChange={e => setLoginEmail(e.target.value)} 
-                      className="h-12 text-base"
-                      inputMode="email"
-                      autoComplete="email"
-                      required 
-                    />
+                    <Input id="email" type="email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} inputMode="email" autoComplete="email" required className="h-12 text-base bg-gray-100" />
                   </div>
 
                   <div className="space-y-3">
                     <Label htmlFor="password">Senha</Label>
-                    <Input 
-                      id="password" 
-                      type="password" 
-                      value={loginPassword} 
-                      onChange={e => setLoginPassword(e.target.value)} 
-                      className="h-12 text-base"
-                      autoComplete="current-password"
-                      required 
-                    />
+                    <Input id="password" type="password" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} autoComplete="current-password" required className="h-12 text-base bg-zinc-100" />
                   </div>
 
                   <Button type="submit" className="w-full h-12 text-base mt-8" disabled={loading}>
@@ -234,113 +217,62 @@ const Auth = () => {
                   <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4">
                     <div className="space-y-3">
                       <Label htmlFor="signup-email">Email</Label>
-                      <Input 
-                        id="signup-email" 
-                        type="email" 
-                        value={signupData.email} 
-                        onChange={e => setSignupData({
-                          ...signupData,
-                          email: e.target.value
-                        })} 
-                        className="h-12 text-base"
-                        inputMode="email"
-                        autoComplete="email"
-                        required 
-                      />
+                      <Input id="signup-email" type="email" value={signupData.email} onChange={e => setSignupData({
+                      ...signupData,
+                      email: e.target.value
+                    })} className="h-12 text-base" inputMode="email" autoComplete="email" required />
                     </div>
 
                     <div className="space-y-3">
                       <Label htmlFor="signup-password">Senha</Label>
-                      <Input 
-                        id="signup-password" 
-                        type="password" 
-                        value={signupData.password} 
-                        onChange={e => setSignupData({
-                          ...signupData,
-                          password: e.target.value
-                        })} 
-                        className="h-12 text-base"
-                        autoComplete="new-password"
-                        required 
-                      />
+                      <Input id="signup-password" type="password" value={signupData.password} onChange={e => setSignupData({
+                      ...signupData,
+                      password: e.target.value
+                    })} className="h-12 text-base" autoComplete="new-password" required />
                     </div>
                   </div>
 
                   <div className="space-y-3">
                     <Label htmlFor="nome">Nome completo</Label>
-                    <Input 
-                      id="nome" 
-                      value={signupData.nome} 
-                      onChange={e => setSignupData({
-                        ...signupData,
-                        nome: e.target.value
-                      })} 
-                      className="h-12 text-base"
-                      autoComplete="name"
-                      required 
-                    />
+                    <Input id="nome" value={signupData.nome} onChange={e => setSignupData({
+                    ...signupData,
+                    nome: e.target.value
+                  })} className="h-12 text-base" autoComplete="name" required />
                   </div>
 
                   <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4">
                     <div className="space-y-3">
                       <Label htmlFor="telefone">Telefone</Label>
-                      <Input 
-                        id="telefone" 
-                        value={signupData.telefone} 
-                        onChange={e => setSignupData({
-                          ...signupData,
-                          telefone: e.target.value
-                        })} 
-                        placeholder="(11) 99999-9999" 
-                        className="h-12 text-base"
-                        inputMode="tel"
-                        autoComplete="tel"
-                        required 
-                      />
+                      <Input id="telefone" value={signupData.telefone} onChange={e => setSignupData({
+                      ...signupData,
+                      telefone: e.target.value
+                    })} placeholder="(11) 99999-9999" className="h-12 text-base" inputMode="tel" autoComplete="tel" required />
                     </div>
 
                     <div className="space-y-3">
                       <Label htmlFor="whatsapp">WhatsApp</Label>
-                      <Input 
-                        id="whatsapp" 
-                        value={signupData.whatsapp} 
-                        onChange={e => setSignupData({
-                          ...signupData,
-                          whatsapp: e.target.value
-                        })} 
-                        placeholder="Opcional" 
-                        className="h-12 text-base"
-                        inputMode="tel"
-                      />
+                      <Input id="whatsapp" value={signupData.whatsapp} onChange={e => setSignupData({
+                      ...signupData,
+                      whatsapp: e.target.value
+                    })} placeholder="Opcional" className="h-12 text-base" inputMode="tel" />
                     </div>
                   </div>
 
                   <div className="space-y-3">
                     <Label htmlFor="cidade">Cidade</Label>
-                    <Input 
-                      id="cidade" 
-                      value={signupData.cidade} 
-                      onChange={e => setSignupData({
-                        ...signupData,
-                        cidade: e.target.value
-                      })} 
-                      className="h-12 text-base"
-                      autoComplete="address-level2"
-                      required 
-                    />
+                    <Input id="cidade" value={signupData.cidade} onChange={e => setSignupData({
+                    ...signupData,
+                    cidade: e.target.value
+                  })} className="h-12 text-base" autoComplete="address-level2" required />
                   </div>
 
                   <div className="space-y-3">
                     <Label htmlFor="tipo">Tipo de profissional</Label>
-                    <Select 
-                      value={signupData.tipo_profissional} 
-                      onValueChange={value => setSignupData({
-                        ...signupData,
-                        tipo_profissional: value,
-                        categoria_id: ""
-                      })} 
-                      required
-                    >
+                    <Select value={signupData.tipo_profissional} onValueChange={value => setSignupData({
+                    ...signupData,
+                    tipo_profissional: value,
+                    categoria_id: ""
+                  })} required>
                       <SelectTrigger className="h-12 text-base">
                         <SelectValue placeholder="Selecione o tipo" />
                       </SelectTrigger>
@@ -351,64 +283,47 @@ const Auth = () => {
                     </Select>
                   </div>
 
-                  {signupData.tipo_profissional && (
-                    <div className="space-y-3">
+                  {signupData.tipo_profissional && <div className="space-y-3">
                       <Label htmlFor="categoria">Categoria</Label>
-                      <Select 
-                        value={signupData.categoria_id} 
-                        onValueChange={value => {
-                          setSignupData({
-                            ...signupData,
-                            categoria_id: value
-                          });
-                          // Gerar descrição automática
-                          if (value && !signupData.descricao) {
-                            const descricao = gerarDescricaoAutomatica(value, signupData.tipo_profissional);
-                            setSignupData(prev => ({
-                              ...prev,
-                              categoria_id: value,
-                              descricao
-                            }));
-                          }
-                        }} 
-                        required
-                      >
+                      <Select value={signupData.categoria_id} onValueChange={value => {
+                    setSignupData({
+                      ...signupData,
+                      categoria_id: value
+                    });
+                    // Gerar descrição automática
+                    if (value && !signupData.descricao) {
+                      const descricao = gerarDescricaoAutomatica(value, signupData.tipo_profissional);
+                      setSignupData(prev => ({
+                        ...prev,
+                        categoria_id: value,
+                        descricao
+                      }));
+                    }
+                  }} required>
                         <SelectTrigger className="h-12 text-base">
                           <SelectValue placeholder="Selecione a categoria" />
                         </SelectTrigger>
                         <SelectContent>
-                          {categoriasFiltradas.map(categoria => (
-                            <SelectItem key={categoria.id} value={categoria.id}>
+                          {categoriasFiltradas.map(categoria => <SelectItem key={categoria.id} value={categoria.id}>
                               {categoria.nome}
-                            </SelectItem>
-                          ))}
+                            </SelectItem>)}
                         </SelectContent>
                       </Select>
-                    </div>
-                  )}
+                    </div>}
 
                   <div className="space-y-3">
                     <Label htmlFor="descricao">Descrição</Label>
-                    <Textarea 
-                      id="descricao" 
-                      value={signupData.descricao} 
-                      onChange={e => setSignupData({
-                        ...signupData,
-                        descricao: e.target.value
-                      })} 
-                      placeholder="Conte sobre sua experiência e serviços..." 
-                      rows={4}
-                      className="text-base resize-none"
-                    />
+                    <Textarea id="descricao" value={signupData.descricao} onChange={e => setSignupData({
+                    ...signupData,
+                    descricao: e.target.value
+                  })} placeholder="Conte sobre sua experiência e serviços..." rows={4} className="text-base resize-none" />
                   </div>
 
-                  {signupData.foto_perfil && (
-                    <div className="space-y-2">
+                  {signupData.foto_perfil && <div className="space-y-2">
                       <p className="text-sm text-muted-foreground">
                         Arquivo selecionado: {signupData.foto_perfil.name}
                       </p>
-                    </div>
-                  )}
+                    </div>}
 
                   <Button type="submit" className="w-full h-12 text-base mt-8" disabled={loading}>
                     {loading ? "Cadastrando..." : "Cadastrar"}
