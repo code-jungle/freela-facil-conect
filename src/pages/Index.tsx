@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, MapPin, User, Phone, LogOut } from "lucide-react";
+import { Search, MapPin, User, Phone, LogOut, Star, Users, Zap, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -173,30 +173,34 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-card border-b border-border">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">FreelaFácil</h1>
-              <p className="text-muted-foreground">Conectando talentos com oportunidades</p>
+      <header className="sticky top-0 z-50 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 border-b border-border">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 gradient-primary rounded-lg flex items-center justify-center">
+                <Zap className="w-5 h-5 text-white" />
+              </div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                FreelaFácil
+              </h1>
             </div>
             <div className="flex gap-2">
               {user ? (
                 <>
                   <Link to="/profile">
-                    <Button variant="outline">
+                    <Button variant="outline" size="sm">
                       <User className="w-4 h-4 mr-2" />
                       Meu Perfil
                     </Button>
                   </Link>
-                  <Button variant="outline" onClick={handleLogout}>
+                  <Button variant="outline" size="sm" onClick={handleLogout}>
                     <LogOut className="w-4 h-4 mr-2" />
                     Sair
                   </Button>
                 </>
               ) : (
                 <Link to="/auth">
-                  <Button variant="outline">
+                  <Button className="gradient-primary text-white border-0">
                     <User className="w-4 h-4 mr-2" />
                     Entrar
                   </Button>
@@ -207,8 +211,78 @@ const Index = () => {
         </div>
       </header>
 
+      {/* Hero Section */}
+      <section className="relative overflow-hidden gradient-hero">
+        <div className="container mx-auto px-4 py-16 md:py-24">
+          <div className="text-center max-w-4xl mx-auto">
+            <h2 className="text-4xl md:text-6xl font-bold mb-6 text-foreground">
+              Conecte-se com os 
+              <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"> melhores profissionais</span>
+            </h2>
+            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+              Encontre freelancers e prestadores de serviços qualificados para seus projetos. 
+              Rápido, fácil e confiável.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/auth">
+                <Button size="lg" className="gradient-primary text-white border-0 px-8 py-4 text-lg">
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  Cadastre-se Gratuitamente
+                </Button>
+              </Link>
+              <Button variant="outline" size="lg" className="px-8 py-4 text-lg" 
+                onClick={() => document.getElementById('profissionais')?.scrollIntoView({ behavior: 'smooth' })}>
+                <Search className="w-5 h-5 mr-2" />
+                Explorar Profissionais
+              </Button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Features Cards */}
+        <div className="container mx-auto px-4 pb-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <Card className="gradient-card border-0 shadow-lg">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Users className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="font-semibold mb-2">Profissionais Verificados</h3>
+                <p className="text-sm text-muted-foreground">
+                  Todos os perfis são verificados para garantir qualidade e confiabilidade
+                </p>
+              </CardContent>
+            </Card>
+            
+            <Card className="gradient-card border-0 shadow-lg">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Zap className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="font-semibold mb-2">Conexão Instantânea</h3>
+                <p className="text-sm text-muted-foreground">
+                  Entre em contato direto via WhatsApp com apenas um clique
+                </p>
+              </CardContent>
+            </Card>
+            
+            <Card className="gradient-card border-0 shadow-lg">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Star className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="font-semibold mb-2">Melhor Qualidade</h3>
+                <p className="text-sm text-muted-foreground">
+                  Encontre os melhores talentos em diversas categorias profissionais
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Filtros */}
-      <section className="bg-muted/50 border-b border-border">
+      <section className="bg-card border-y border-border sticky top-[73px] z-40" id="profissionais">
         <div className="container mx-auto px-4 py-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Busca */}
@@ -271,65 +345,82 @@ const Index = () => {
       <main className="container mx-auto px-4 py-8">
         {filteredProfiles.length === 0 ? (
           <div className="text-center py-12">
-            <User className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Nenhum profissional encontrado</h3>
-            <p className="text-muted-foreground">
-              Tente ajustar os filtros ou remover alguns critérios de busca.
+            <div className="w-20 h-20 gradient-primary rounded-full flex items-center justify-center mx-auto mb-6">
+              <User className="w-10 h-10 text-white" />
+            </div>
+            <h3 className="text-2xl font-semibold mb-4">Nenhum profissional encontrado</h3>
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+              Tente ajustar os filtros ou remover alguns critérios de busca para encontrar mais profissionais.
             </p>
+            <Button variant="outline" onClick={() => {
+              setSearchTerm("");
+              setSelectedTipo("todos");
+              setSelectedCategoria("todas");
+              setSelectedCidade("todas");
+            }}>
+              Limpar Filtros
+            </Button>
           </div>
         ) : (
           <>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-semibold">
-                {filteredProfiles.length} profissional{filteredProfiles.length !== 1 ? 'is' : ''} encontrado{filteredProfiles.length !== 1 ? 's' : ''}
-              </h2>
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-3xl font-bold mb-2">
+                  {filteredProfiles.length} profissional{filteredProfiles.length !== 1 ? 'is' : ''} {filteredProfiles.length !== 1 ? 'encontrados' : 'encontrado'}
+                </h2>
+                <p className="text-muted-foreground">
+                  Escolha o profissional ideal para seu projeto
+                </p>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProfiles.map((profile) => (
-                <Card key={profile.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <Card key={profile.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 gradient-card border-0">
                   <CardContent className="p-6">
-                    <div className="flex items-start gap-4">
-                      <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center text-2xl font-semibold text-muted-foreground overflow-hidden">
-                        {profile.foto_perfil ? (
-                          <img 
-                            src={profile.foto_perfil} 
-                            alt={profile.nome}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          profile.nome.charAt(0).toUpperCase()
-                        )}
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="relative">
+                        <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center text-2xl font-semibold text-white overflow-hidden">
+                          {profile.foto_perfil ? (
+                            <img 
+                              src={profile.foto_perfil} 
+                              alt={profile.nome}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            profile.nome.charAt(0).toUpperCase()
+                          )}
+                        </div>
+                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-accent rounded-full flex items-center justify-center">
+                          <CheckCircle className="w-4 h-4 text-white" />
+                        </div>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-lg truncate">{profile.nome}</h3>
-                        <p className="text-sm text-muted-foreground capitalize">
+                        <h3 className="font-bold text-lg truncate mb-1">{profile.nome}</h3>
+                        <p className="text-sm font-medium text-primary capitalize mb-1">
                           {profile.categorias.nome}
                         </p>
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
                           <MapPin className="w-3 h-3" />
                           {profile.cidade}
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-1 capitalize">
-                          {profile.tipo_profissional}
                         </div>
                       </div>
                     </div>
 
                     {profile.descricao && (
-                      <p className="text-sm text-muted-foreground mt-4 line-clamp-2">
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-3 leading-relaxed">
                         {profile.descricao}
                       </p>
                     )}
 
-                    <div className="flex gap-2 mt-4">
+                    <div className="flex gap-2">
                       <Link to={`/profile/${profile.id}`} className="flex-1">
                         <Button variant="outline" className="w-full">
                           Ver Perfil
                         </Button>
                       </Link>
                       <Button 
-                        className="flex-1"
+                        className="flex-1 gradient-primary text-white border-0"
                         onClick={() => {
                           const whatsapp = profile.whatsapp || profile.telefone;
                           const message = gerarMensagemWhatsApp(profile.nome);
