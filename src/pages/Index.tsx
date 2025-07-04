@@ -36,6 +36,7 @@ const Index = () => {
   const [cidades, setCidades] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [navigating, setNavigating] = useState(false);
 
   // Verificar autenticação
   useEffect(() => {
@@ -106,15 +107,27 @@ const Index = () => {
   }, []);
   const handleLogout = async () => {
     try {
+      setNavigating(true);
       await supabase.auth.signOut();
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
+    } finally {
+      setNavigating(false);
     }
   };
 
-  // Aplicar filtros
+  const handleNavigation = (path: string) => {
+    setNavigating(true);
+    // Pequeno delay para mostrar o loading state
+    setTimeout(() => {
+      navigate(path);
+    }, 100);
+  };
+
+  // Aplicar filtros com debounce para melhor performance
   useEffect(() => {
-    let filtered = profiles;
+    const applyFilters = () => {
+      let filtered = profiles;
 
     // Filtro por termo de busca
     if (searchTerm) {
@@ -138,7 +151,12 @@ const Index = () => {
     if (selectedCidade !== "todas") {
       filtered = filtered.filter(profile => profile.cidade === selectedCidade);
     }
-    setFilteredProfiles(filtered);
+      setFilteredProfiles(filtered);
+    };
+
+    // Debounce para filtros de busca
+    const timeoutId = setTimeout(applyFilters, searchTerm ? 300 : 0);
+    return () => clearTimeout(timeoutId);
   }, [searchTerm, selectedTipo, selectedCategoria, selectedCidade, profiles, categorias]);
 
   // Categorias filtradas por tipo
@@ -146,11 +164,13 @@ const Index = () => {
   const gerarMensagemWhatsApp = (nome: string) => {
     return encodeURIComponent(`Olá ${nome}, vi seu perfil no FreelaFácil e gostaria de saber mais sobre seus serviços.`);
   };
-  if (loading) {
+  if (loading || navigating) {
     return <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Carregando profissionais...</p>
+          <p className="text-muted-foreground">
+            {loading ? "Carregando profissionais..." : "Redirecionando..."}
+          </p>
         </div>
       </div>;
   }
@@ -169,22 +189,32 @@ const Index = () => {
             </div>
             <div className="flex gap-2">
               {user ? <>
-                  <Link to="/profile">
-                    <Button variant="outline" size="sm">
-                      <User className="w-4 h-4 mr-2" />
-                      Meu Perfil
-                    </Button>
-                  </Link>
-                  <Button variant="outline" size="sm" onClick={handleLogout}>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => handleNavigation('/profile')}
+                    disabled={navigating}
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    Meu Perfil
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleLogout}
+                    disabled={navigating}
+                  >
                     <LogOut className="w-4 h-4 mr-2" />
                     Sair
                   </Button>
-                </> : <Link to="/auth">
-                  <Button className="gradient-primary text-white border-0">
-                    <User className="w-4 h-4 mr-2" />
-                    Entrar
-                  </Button>
-                </Link>}
+                </> : <Button 
+                  className="gradient-primary text-white border-0"
+                  onClick={() => handleNavigation('/auth')}
+                  disabled={navigating}
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  Entrar
+                </Button>}
             </div>
           </div>
         </div>
@@ -200,12 +230,15 @@ const Index = () => {
             </h2>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">Encontre freelancers e prestadores de serviços qualificados de maneira rápido e fácil.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/auth">
-                <Button size="lg" className="gradient-primary text-white border-0 px-8 py-4 text-lg">
-                  <CheckCircle className="w-5 h-5 mr-2" />
-                  Cadastre-se Gratuitamente
-                </Button>
-              </Link>
+              <Button 
+                size="lg" 
+                className="gradient-primary text-white border-0 px-8 py-4 text-lg"
+                onClick={() => handleNavigation('/auth')}
+                disabled={navigating}
+              >
+                <CheckCircle className="w-5 h-5 mr-2" />
+                Cadastre-se Gratuitamente
+              </Button>
               <Button variant="outline" size="lg" className="px-8 py-4 text-lg" onClick={() => document.getElementById('profissionais')?.scrollIntoView({
               behavior: 'smooth'
             })}>
@@ -368,11 +401,14 @@ const Index = () => {
                       </p>}
 
                     <div className="flex gap-2">
-                      <Link to={`/profile/${profile.id}`} className="flex-1">
-                        <Button variant="outline" className="w-full">
-                          Ver Perfil
-                        </Button>
-                      </Link>
+                      <Button 
+                        variant="outline" 
+                        className="flex-1"
+                        onClick={() => handleNavigation(`/profile/${profile.id}`)}
+                        disabled={navigating}
+                      >
+                        Ver Perfil
+                      </Button>
                       <Button className="flex-1 gradient-primary text-white border-0" onClick={() => {
                   const whatsapp = profile.whatsapp || profile.telefone;
                   const message = gerarMensagemWhatsApp(profile.nome);
