@@ -95,9 +95,10 @@ const Index = () => {
     // Filtro por termo de busca
     if (searchTerm) {
       filtered = filtered.filter(profile =>
-        profile.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        profile.categorias.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        profile.cidade.toLowerCase().includes(searchTerm.toLowerCase())
+        profile.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        profile.categorias?.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        profile.cidade?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        profile.descricao?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
