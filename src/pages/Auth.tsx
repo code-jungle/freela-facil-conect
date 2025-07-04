@@ -106,28 +106,7 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      let fotoUrl = "";
-      
-      // Upload da foto se foi selecionada
-      if (signupData.foto_perfil) {
-        const fileExt = signupData.foto_perfil.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `temp/${fileName}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('avatars')
-          .upload(filePath, signupData.foto_perfil);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('avatars')
-          .getPublicUrl(filePath);
-
-        fotoUrl = publicUrl;
-      }
-
-      // Criar usuário na autenticação com dados no metadata
+      // Criar usuário na autenticação primeiro (sem a foto)
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: signupData.email,
         password: signupData.password,
@@ -141,7 +120,8 @@ const Auth = () => {
             tipo_profissional: signupData.tipo_profissional,
             categoria_id: signupData.categoria_id,
             descricao: signupData.descricao,
-            foto_perfil: fotoUrl,
+            foto_perfil: "", // Será atualizada pelo trigger se necessário
+            has_pending_photo: signupData.foto_perfil ? "true" : "false", // Flag para saber se tem foto pendente
           }
         }
       });

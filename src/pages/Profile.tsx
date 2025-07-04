@@ -69,6 +69,15 @@ const Profile = () => {
       } else {
         setProfileData(profile);
         setEditData(profile);
+        
+        // Verificar se há foto pendente do metadata do usuário
+        const hasPendingPhoto = session.user.user_metadata?.has_pending_photo === "true";
+        if (hasPendingPhoto && !profile.foto_perfil) {
+          toast({
+            title: "Upload de foto pendente",
+            description: "Você pode fazer upload da sua foto agora editando seu perfil.",
+          });
+        }
       }
 
       setLoading(false);
