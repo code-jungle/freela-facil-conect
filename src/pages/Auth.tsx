@@ -165,11 +165,11 @@ const Auth = () => {
     const tipoTexto = tipo === 'freelancer' ? 'freelancer' : 'prestador de serviços';
     return `Sou ${tipoTexto} especializado em ${categoria_obj.nome.toLowerCase()}. Tenho experiência na área e estou sempre disponível para novos projetos. Entre em contato para conhecer melhor meu trabalho!`;
   };
-  return <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+  return <div className="min-h-screen bg-background flex items-center justify-center p-6 sm:p-4">
+      <div className="w-full max-w-lg sm:max-w-md">
         <div className="mb-6">
           <Link to="/">
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" className="h-12 px-4">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Voltar
             </Button>
@@ -195,85 +195,153 @@ const Auth = () => {
               </TabsList>
 
               <TabsContent value="login">
-                <form onSubmit={handleLogin} className="space-y-4">
-                  <div className="space-y-2">
+                <form onSubmit={handleLogin} className="space-y-6">
+                  <div className="space-y-3">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} required />
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      value={loginEmail} 
+                      onChange={e => setLoginEmail(e.target.value)} 
+                      className="h-12 text-base"
+                      inputMode="email"
+                      autoComplete="email"
+                      required 
+                    />
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Label htmlFor="password">Senha</Label>
-                    <Input id="password" type="password" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} required />
+                    <Input 
+                      id="password" 
+                      type="password" 
+                      value={loginPassword} 
+                      onChange={e => setLoginPassword(e.target.value)} 
+                      className="h-12 text-base"
+                      autoComplete="current-password"
+                      required 
+                    />
                   </div>
 
-                  <Button type="submit" className="w-full" disabled={loading}>
+                  <Button type="submit" className="w-full h-12 text-base mt-8" disabled={loading}>
                     {loading ? "Entrando..." : "Entrar"}
                   </Button>
                 </form>
               </TabsContent>
 
               <TabsContent value="signup">
-                <form onSubmit={handleSignup} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
+                <form onSubmit={handleSignup} className="space-y-6">
+                  <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4">
+                    <div className="space-y-3">
                       <Label htmlFor="signup-email">Email</Label>
-                      <Input id="signup-email" type="email" value={signupData.email} onChange={e => setSignupData({
-                      ...signupData,
-                      email: e.target.value
-                    })} required />
+                      <Input 
+                        id="signup-email" 
+                        type="email" 
+                        value={signupData.email} 
+                        onChange={e => setSignupData({
+                          ...signupData,
+                          email: e.target.value
+                        })} 
+                        className="h-12 text-base"
+                        inputMode="email"
+                        autoComplete="email"
+                        required 
+                      />
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <Label htmlFor="signup-password">Senha</Label>
-                      <Input id="signup-password" type="password" value={signupData.password} onChange={e => setSignupData({
-                      ...signupData,
-                      password: e.target.value
-                    })} required />
+                      <Input 
+                        id="signup-password" 
+                        type="password" 
+                        value={signupData.password} 
+                        onChange={e => setSignupData({
+                          ...signupData,
+                          password: e.target.value
+                        })} 
+                        className="h-12 text-base"
+                        autoComplete="new-password"
+                        required 
+                      />
                     </div>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Label htmlFor="nome">Nome completo</Label>
-                    <Input id="nome" value={signupData.nome} onChange={e => setSignupData({
-                    ...signupData,
-                    nome: e.target.value
-                  })} required />
+                    <Input 
+                      id="nome" 
+                      value={signupData.nome} 
+                      onChange={e => setSignupData({
+                        ...signupData,
+                        nome: e.target.value
+                      })} 
+                      className="h-12 text-base"
+                      autoComplete="name"
+                      required 
+                    />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
+                  <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4">
+                    <div className="space-y-3">
                       <Label htmlFor="telefone">Telefone</Label>
-                      <Input id="telefone" value={signupData.telefone} onChange={e => setSignupData({
-                      ...signupData,
-                      telefone: e.target.value
-                    })} placeholder="(11) 99999-9999" required />
+                      <Input 
+                        id="telefone" 
+                        value={signupData.telefone} 
+                        onChange={e => setSignupData({
+                          ...signupData,
+                          telefone: e.target.value
+                        })} 
+                        placeholder="(11) 99999-9999" 
+                        className="h-12 text-base"
+                        inputMode="tel"
+                        autoComplete="tel"
+                        required 
+                      />
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <Label htmlFor="whatsapp">WhatsApp</Label>
-                      <Input id="whatsapp" value={signupData.whatsapp} onChange={e => setSignupData({
-                      ...signupData,
-                      whatsapp: e.target.value
-                    })} placeholder="Opcional" />
+                      <Input 
+                        id="whatsapp" 
+                        value={signupData.whatsapp} 
+                        onChange={e => setSignupData({
+                          ...signupData,
+                          whatsapp: e.target.value
+                        })} 
+                        placeholder="Opcional" 
+                        className="h-12 text-base"
+                        inputMode="tel"
+                      />
                     </div>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Label htmlFor="cidade">Cidade</Label>
-                    <Input id="cidade" value={signupData.cidade} onChange={e => setSignupData({
-                    ...signupData,
-                    cidade: e.target.value
-                  })} required />
+                    <Input 
+                      id="cidade" 
+                      value={signupData.cidade} 
+                      onChange={e => setSignupData({
+                        ...signupData,
+                        cidade: e.target.value
+                      })} 
+                      className="h-12 text-base"
+                      autoComplete="address-level2"
+                      required 
+                    />
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Label htmlFor="tipo">Tipo de profissional</Label>
-                    <Select value={signupData.tipo_profissional} onValueChange={value => setSignupData({
-                    ...signupData,
-                    tipo_profissional: value,
-                    categoria_id: ""
-                  })} required>
-                      <SelectTrigger>
+                    <Select 
+                      value={signupData.tipo_profissional} 
+                      onValueChange={value => setSignupData({
+                        ...signupData,
+                        tipo_profissional: value,
+                        categoria_id: ""
+                      })} 
+                      required
+                    >
+                      <SelectTrigger className="h-12 text-base">
                         <SelectValue placeholder="Selecione o tipo" />
                       </SelectTrigger>
                       <SelectContent>
@@ -283,51 +351,66 @@ const Auth = () => {
                     </Select>
                   </div>
 
-                  {signupData.tipo_profissional && <div className="space-y-2">
+                  {signupData.tipo_profissional && (
+                    <div className="space-y-3">
                       <Label htmlFor="categoria">Categoria</Label>
-                      <Select value={signupData.categoria_id} onValueChange={value => {
-                    setSignupData({
-                      ...signupData,
-                      categoria_id: value
-                    });
-                    // Gerar descrição automática
-                    if (value && !signupData.descricao) {
-                      const descricao = gerarDescricaoAutomatica(value, signupData.tipo_profissional);
-                      setSignupData(prev => ({
-                        ...prev,
-                        categoria_id: value,
-                        descricao
-                      }));
-                    }
-                  }} required>
-                        <SelectTrigger>
+                      <Select 
+                        value={signupData.categoria_id} 
+                        onValueChange={value => {
+                          setSignupData({
+                            ...signupData,
+                            categoria_id: value
+                          });
+                          // Gerar descrição automática
+                          if (value && !signupData.descricao) {
+                            const descricao = gerarDescricaoAutomatica(value, signupData.tipo_profissional);
+                            setSignupData(prev => ({
+                              ...prev,
+                              categoria_id: value,
+                              descricao
+                            }));
+                          }
+                        }} 
+                        required
+                      >
+                        <SelectTrigger className="h-12 text-base">
                           <SelectValue placeholder="Selecione a categoria" />
                         </SelectTrigger>
                         <SelectContent>
-                          {categoriasFiltradas.map(categoria => <SelectItem key={categoria.id} value={categoria.id}>
+                          {categoriasFiltradas.map(categoria => (
+                            <SelectItem key={categoria.id} value={categoria.id}>
                               {categoria.nome}
-                            </SelectItem>)}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
-                    </div>}
+                    </div>
+                  )}
 
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Label htmlFor="descricao">Descrição</Label>
-                    <Textarea id="descricao" value={signupData.descricao} onChange={e => setSignupData({
-                    ...signupData,
-                    descricao: e.target.value
-                  })} placeholder="Conte sobre sua experiência e serviços..." rows={3} />
+                    <Textarea 
+                      id="descricao" 
+                      value={signupData.descricao} 
+                      onChange={e => setSignupData({
+                        ...signupData,
+                        descricao: e.target.value
+                      })} 
+                      placeholder="Conte sobre sua experiência e serviços..." 
+                      rows={4}
+                      className="text-base resize-none"
+                    />
                   </div>
 
-                  <div className="space-y-2">
-                    
-                    
-                    {signupData.foto_perfil && <p className="text-sm text-muted-foreground">
+                  {signupData.foto_perfil && (
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground">
                         Arquivo selecionado: {signupData.foto_perfil.name}
-                      </p>}
-                  </div>
+                      </p>
+                    </div>
+                  )}
 
-                  <Button type="submit" className="w-full" disabled={loading}>
+                  <Button type="submit" className="w-full h-12 text-base mt-8" disabled={loading}>
                     {loading ? "Cadastrando..." : "Cadastrar"}
                   </Button>
                 </form>
