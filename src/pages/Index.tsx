@@ -74,8 +74,8 @@ const Index = () => {
         setFilteredProfiles(profilesData || []);
         setCategorias(categoriasData || []);
 
-        // Extrair cidades únicas
-        const cidadesUnicas = [...new Set(profilesData?.map(p => p.cidade))].sort();
+        // Extrair cidades únicas (filtrando valores vazios)
+        const cidadesUnicas = [...new Set(profilesData?.map(p => p.cidade).filter(cidade => cidade && cidade.trim() !== ""))].sort();
         setCidades(cidadesUnicas);
 
       } catch (error) {
