@@ -317,7 +317,7 @@ const Auth = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="foto">Foto de perfil</Label>
+                    
                     
                     {signupData.foto_perfil && <p className="text-sm text-muted-foreground">
                         Arquivo selecionado: {signupData.foto_perfil.name}
