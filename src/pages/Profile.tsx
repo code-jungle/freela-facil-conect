@@ -1,139 +1,38 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { LogOut, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Edit, Save, LogOut, ArrowLeft, Upload, Camera } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
-
-interface Categoria {
-  id: string;
-  nome: string;
-  tipo_profissional: string;
-}
-
-interface ProfileData {
-  id: string;
-  nome: string;
-  telefone: string;
-  whatsapp: string | null;
-  cidade: string;
-  tipo_profissional: string;
-  categoria_id: string;
-  descricao: string | null;
-  foto_perfil: string | null;
-}
-
-interface EditData extends Partial<ProfileData> {
-  foto_perfil_file?: File | null;
-}
+import { useProfileData } from "@/hooks/useProfileData";
+import { usePhotoUpload } from "@/hooks/usePhotoUpload";
+import { ProfileHeader } from "@/components/profile/ProfileHeader";
+import { ProfileActions } from "@/components/profile/ProfileActions";
+import { ProfileForm } from "@/components/profile/ProfileForm";
+import { PhotoUpload } from "@/components/profile/PhotoUpload";
 
 const Profile = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [profileData, setProfileData] = useState<ProfileData | null>(null);
-  const [editData, setEditData] = useState<EditData>({});
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const {
+    loading,
+    saving,
+    setSaving,
+    editing,
+    setEditing,
+    categorias,
+    profileData,
+    setProfileData,
+    editData,
+    setEditData,
+    handleLogout,
+  } = useProfileData();
 
-  // Verificar autenticação e buscar dados
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate('/auth');
-        return;
-      }
-
-      // Buscar perfil do usuário
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .single();
-
-      if (error) {
-        console.error('Erro ao buscar perfil:', error);
-        toast({
-          title: "Erro",
-          description: "Não foi possível carregar seu perfil.",
-          variant: "destructive",
-        });
-      } else {
-        setProfileData(profile);
-        setEditData(profile);
-        
-        // Verificar se há foto pendente do metadata do usuário
-        const hasPendingPhoto = session.user.user_metadata?.has_pending_photo === "true";
-        if (hasPendingPhoto && !profile.foto_perfil) {
-          toast({
-            title: "Upload de foto pendente",
-            description: "Você pode fazer upload da sua foto agora editando seu perfil.",
-          });
-        }
-      }
-
-      setLoading(false);
-    };
-
-    checkAuth();
-  }, [navigate, toast]);
-
-  // Buscar categorias
-  useEffect(() => {
-    const fetchCategorias = async () => {
-      const { data, error } = await supabase
-        .from('categorias')
-        .select('*')
-        .order('nome');
-
-      if (!error) {
-        setCategorias(data || []);
-      }
-    };
-
-    fetchCategorias();
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
-      toast({
-        title: "Logout realizado",
-        description: "Você foi deslogado com sucesso.",
-      });
-      
-      navigate('/');
-    } catch (error: any) {
-      console.error('Erro ao fazer logout:', error);
-      toast({
-        title: "Erro no logout",
-        description: error.message || "Tente novamente.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handlePhotoSelect = (file: File) => {
-    setEditData({...editData, foto_perfil_file: file});
-    
-    // Criar preview da imagem
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setPhotoPreview(e.target?.result as string);
-    };
-    reader.readAsDataURL(file);
-  };
+  const {
+    photoPreview,
+    handlePhotoSelect,
+    uploadPhoto,
+    clearPhotoPreview,
+  } = usePhotoUpload(editData, setEditData);
 
   const handleSave = async () => {
     if (!profileData) return;
@@ -141,29 +40,7 @@ const Profile = () => {
     setSaving(true);
     
     try {
-      let fotoUrl = editData.foto_perfil;
-      
-      // Upload da nova foto se foi selecionada
-      if (editData.foto_perfil_file) {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) throw new Error('Usuário não autenticado');
-
-        const fileExt = editData.foto_perfil_file.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `${session.user.id}/${fileName}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('avatars')
-          .upload(filePath, editData.foto_perfil_file);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('avatars')
-          .getPublicUrl(filePath);
-
-        fotoUrl = publicUrl;
-      }
+      const fotoUrl = await uploadPhoto();
 
       const { error } = await supabase
         .from('profiles')
@@ -181,9 +58,9 @@ const Profile = () => {
 
       if (error) throw error;
 
-      setProfileData({ ...profileData, ...editData, foto_perfil: fotoUrl } as ProfileData);
+      setProfileData({ ...profileData, ...editData, foto_perfil: fotoUrl } as any);
       setEditData({ ...editData, foto_perfil: fotoUrl, foto_perfil_file: null });
-      setPhotoPreview(null);
+      clearPhotoPreview();
       setEditing(false);
       
       toast({
@@ -201,15 +78,19 @@ const Profile = () => {
     }
   };
 
-  const categoriasFiltradas = editData.tipo_profissional 
-    ? categorias.filter(c => c.tipo_profissional === editData.tipo_profissional)
-    : [];
+  const handleCancel = () => {
+    setEditing(false);
+    setEditData(profileData || {});
+    clearPhotoPreview();
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <User className="w-12 h-12 mx-auto mb-4 text-muted-foreground animate-pulse" />
+          <div className="w-12 h-12 mx-auto mb-4 text-muted-foreground animate-pulse">
+            Loading...
+          </div>
           <p>Carregando perfil...</p>
         </div>
       </div>
@@ -227,7 +108,7 @@ const Profile = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => navigate('/')} className="w-full">
+            <Button onClick={() => window.location.href = '/'} className="w-full">
               Voltar ao início
             </Button>
           </CardContent>
@@ -253,189 +134,40 @@ const Profile = () => {
         </div>
 
         <Card>
-          <CardHeader className="text-center">
-            <div className="relative w-24 h-24 mx-auto mb-4 group">
-              <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center overflow-hidden">
-                {(photoPreview || profileData.foto_perfil) ? (
-                  <img 
-                    src={photoPreview || profileData.foto_perfil} 
-                    alt={profileData.nome}
-                    className="w-24 h-24 rounded-full object-cover"
-                  />
-                ) : (
-                  <User className="w-12 h-12 text-primary-foreground" />
-                )}
-              </div>
-              
-              {editing && (
-                <label htmlFor="foto-upload" className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                  <Camera className="w-6 h-6 text-white" />
-                  <input
-                    id="foto-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handlePhotoSelect(file);
-                    }}
-                  />
-                </label>
-              )}
-            </div>
-            <CardTitle className="text-2xl">{profileData.nome}</CardTitle>
-            <CardDescription>
-              {categorias.find(c => c.id === profileData.categoria_id)?.nome} • {profileData.cidade}
-            </CardDescription>
+          <CardHeader>
+            <ProfileHeader
+              profileData={profileData}
+              photoPreview={photoPreview}
+              editing={editing}
+              onPhotoSelect={handlePhotoSelect}
+              categorias={categorias}
+            />
           </CardHeader>
 
           <CardContent className="space-y-6">
-            <div className="flex justify-end">
-              {editing ? (
-                <div className="space-x-2">
-                  <Button variant="outline" onClick={() => {
-                    setEditing(false);
-                    setEditData(profileData);
-                  }}>
-                    Cancelar
-                  </Button>
-                  <Button onClick={handleSave} disabled={saving}>
-                    <Save className="w-4 h-4 mr-2" />
-                    {saving ? "Salvando..." : "Salvar"}
-                  </Button>
-                </div>
-              ) : (
-                <Button onClick={() => setEditing(true)}>
-                  <Edit className="w-4 h-4 mr-2" />
-                  Editar
-                </Button>
-              )}
-            </div>
+            <ProfileActions
+              editing={editing}
+              saving={saving}
+              profileData={profileData}
+              onEdit={() => setEditing(true)}
+              onCancel={handleCancel}
+              onSave={handleSave}
+            />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="nome">Nome completo</Label>
-                <Input
-                  id="nome"
-                  value={editing ? editData.nome || '' : profileData.nome}
-                  onChange={(e) => setEditData({...editData, nome: e.target.value})}
-                  disabled={!editing}
-                />
-              </div>
+            <ProfileForm
+              editing={editing}
+              profileData={profileData}
+              editData={editData}
+              categorias={categorias}
+              onDataChange={setEditData}
+            />
 
-              <div className="space-y-2">
-                <Label htmlFor="telefone">Telefone</Label>
-                <Input
-                  id="telefone"
-                  value={editing ? editData.telefone || '' : profileData.telefone}
-                  onChange={(e) => setEditData({...editData, telefone: e.target.value})}
-                  disabled={!editing}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="whatsapp">WhatsApp</Label>
-                <Input
-                  id="whatsapp"
-                  value={editing ? editData.whatsapp || '' : profileData.whatsapp || ''}
-                  onChange={(e) => setEditData({...editData, whatsapp: e.target.value})}
-                  disabled={!editing}
-                  placeholder="Opcional"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="cidade">Cidade</Label>
-                <Input
-                  id="cidade"
-                  value={editing ? editData.cidade || '' : profileData.cidade}
-                  onChange={(e) => setEditData({...editData, cidade: e.target.value})}
-                  disabled={!editing}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="tipo">Tipo de profissional</Label>
-                <Select 
-                  value={editing ? editData.tipo_profissional || '' : profileData.tipo_profissional}
-                  onValueChange={(value) => setEditData({...editData, tipo_profissional: value, categoria_id: ''})}
-                  disabled={!editing}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="freelancer">Freelancer</SelectItem>
-                    <SelectItem value="prestador">Prestador de Serviço</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="categoria">Categoria</Label>
-                <Select 
-                  value={editing ? editData.categoria_id || '' : profileData.categoria_id}
-                  onValueChange={(value) => setEditData({...editData, categoria_id: value})}
-                  disabled={!editing}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categoriasFiltradas.map((categoria) => (
-                      <SelectItem key={categoria.id} value={categoria.id}>
-                        {categoria.nome}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="foto-alt">Upload de foto</Label>
-              {editing ? (
-                <div className="space-y-3">
-                  <label htmlFor="foto-alt-upload" className="flex items-center justify-center gap-2 p-4 border-2 border-dashed border-muted-foreground/25 rounded-lg hover:border-primary/50 transition-colors cursor-pointer group">
-                    <Upload className="w-5 h-5 text-muted-foreground group-hover:text-primary" />
-                    <span className="text-sm text-muted-foreground group-hover:text-primary">
-                      Clique para selecionar uma foto
-                    </span>
-                    <input
-                      id="foto-alt-upload"
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handlePhotoSelect(file);
-                      }}
-                    />
-                  </label>
-                  {editData.foto_perfil_file && (
-                    <p className="text-sm text-muted-foreground">
-                      ✓ Arquivo selecionado: {editData.foto_perfil_file.name}
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <div className="text-sm text-muted-foreground">
-                  {profileData.foto_perfil ? "Foto carregada" : "Nenhuma foto"}
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="descricao">Descrição</Label>
-              <Textarea
-                id="descricao"
-                value={editing ? editData.descricao || '' : profileData.descricao || ''}
-                onChange={(e) => setEditData({...editData, descricao: e.target.value})}
-                disabled={!editing}
-                placeholder="Conte sobre sua experiência e serviços..."
-                rows={4}
-              />
-            </div>
+            <PhotoUpload
+              editing={editing}
+              editData={editData}
+              onPhotoSelect={handlePhotoSelect}
+              hasExistingPhoto={!!profileData.foto_perfil}
+            />
           </CardContent>
         </Card>
       </div>

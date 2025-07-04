@@ -1,0 +1,121 @@
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { ProfileData, EditData, Categoria } from "./types";
+
+interface ProfileFormProps {
+  editing: boolean;
+  profileData: ProfileData;
+  editData: EditData;
+  categorias: Categoria[];
+  onDataChange: (data: EditData) => void;
+}
+
+export const ProfileForm = ({ 
+  editing, 
+  profileData, 
+  editData, 
+  categorias, 
+  onDataChange 
+}: ProfileFormProps) => {
+  const categoriasFiltradas = editData.tipo_profissional 
+    ? categorias.filter(c => c.tipo_profissional === editData.tipo_profissional)
+    : [];
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="nome">Nome completo</Label>
+          <Input
+            id="nome"
+            value={editing ? editData.nome || '' : profileData.nome}
+            onChange={(e) => onDataChange({...editData, nome: e.target.value})}
+            disabled={!editing}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="telefone">Telefone</Label>
+          <Input
+            id="telefone"
+            value={editing ? editData.telefone || '' : profileData.telefone}
+            onChange={(e) => onDataChange({...editData, telefone: e.target.value})}
+            disabled={!editing}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="whatsapp">WhatsApp</Label>
+          <Input
+            id="whatsapp"
+            value={editing ? editData.whatsapp || '' : profileData.whatsapp || ''}
+            onChange={(e) => onDataChange({...editData, whatsapp: e.target.value})}
+            disabled={!editing}
+            placeholder="Opcional"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="cidade">Cidade</Label>
+          <Input
+            id="cidade"
+            value={editing ? editData.cidade || '' : profileData.cidade}
+            onChange={(e) => onDataChange({...editData, cidade: e.target.value})}
+            disabled={!editing}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="tipo">Tipo de profissional</Label>
+          <Select 
+            value={editing ? editData.tipo_profissional || '' : profileData.tipo_profissional}
+            onValueChange={(value) => onDataChange({...editData, tipo_profissional: value, categoria_id: ''})}
+            disabled={!editing}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="freelancer">Freelancer</SelectItem>
+              <SelectItem value="prestador">Prestador de Serviço</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="categoria">Categoria</Label>
+          <Select 
+            value={editing ? editData.categoria_id || '' : profileData.categoria_id}
+            onValueChange={(value) => onDataChange({...editData, categoria_id: value})}
+            disabled={!editing}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {categoriasFiltradas.map((categoria) => (
+                <SelectItem key={categoria.id} value={categoria.id}>
+                  {categoria.nome}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="descricao">Descrição</Label>
+        <Textarea
+          id="descricao"
+          value={editing ? editData.descricao || '' : profileData.descricao || ''}
+          onChange={(e) => onDataChange({...editData, descricao: e.target.value})}
+          disabled={!editing}
+          placeholder="Conte sobre sua experiência e serviços..."
+          rows={4}
+        />
+      </div>
+    </div>
+  );
+};
