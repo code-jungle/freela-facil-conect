@@ -52,8 +52,9 @@ All colors MUST be HSL.
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
 
-    /* iOS/Safari specific fixes */
+    /* Universal mobile fixes */
     --webkit-tap-highlight-color: transparent;
+    --webkit-touch-callout: none;
   }
 
   .dark {
@@ -92,6 +93,10 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Universal mobile fixes */
+    --webkit-tap-highlight-color: transparent;
+    --webkit-touch-callout: none;
   }
 }
 
@@ -102,6 +107,12 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    /* Mobile optimizations */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
   }
 }
 
@@ -118,26 +129,71 @@ All colors MUST be HSL.
     background: var(--gradient-card);
   }
 
-  /* iOS/Safari specific button fixes */
-  button {
+  /* Universal mobile device fixes for Android and iOS */
+  button, 
+  input, 
+  select, 
+  textarea {
     -webkit-tap-highlight-color: transparent;
     -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
     -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Fix for iOS button rendering */
-  @supports (-webkit-touch-callout: none) {
-    button[data-variant="outline"] {
-      background-color: rgba(255, 255, 255, 0.9) !important;
-      border: 1px solid hsl(var(--border)) !important;
-      color: hsl(var(--foreground)) !important;
-    }
+  /* Fix outline buttons for all mobile devices */
+  button[data-variant="outline"], 
+  .outline-button {
+    background-color: hsl(var(--card)) !important;
+    background-image: none !important;
+    border: 1px solid hsl(var(--border)) !important;
+    color: hsl(var(--foreground)) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
 
-    button[data-variant="outline"]:hover,
-    button[data-variant="outline"]:active {
-      background-color: hsl(var(--accent)) !important;
-      color: hsl(var(--accent-foreground)) !important;
+  button[data-variant="outline"]:hover,
+  button[data-variant="outline"]:focus,
+  button[data-variant="outline"]:active,
+  .outline-button:hover,
+  .outline-button:focus,
+  .outline-button:active {
+    background-color: hsl(var(--accent)) !important;
+    color: hsl(var(--accent-foreground)) !important;
+    border-color: hsl(var(--accent)) !important;
+  }
+
+  /* Android Chrome specific fixes */
+  @media screen and (-webkit-min-device-pixel-ratio: 0) {
+    button {
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
     }
+  }
+
+  /* Touch device improvements */
+  @media (hover: none) and (pointer: coarse) {
+    button {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    button[data-variant="outline"] {
+      background-color: rgba(255, 255, 255, 0.95) !important;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+  }
+
+  /* Dark mode mobile fixes */
+  .dark button[data-variant="outline"] {
+    background-color: hsl(var(--card)) !important;
+    border-color: hsl(var(--border)) !important;
   }
 }
