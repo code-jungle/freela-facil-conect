@@ -191,7 +191,7 @@ const Auth = () => {
             <Tabs defaultValue="login" className="space-y-4">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Entrar</TabsTrigger>
-                <TabsTrigger value="signup" className="py-[13px] bg-gray-400 hover:bg-gray-300 text-gray-950">Cadastrar</TabsTrigger>
+                <TabsTrigger value="signup" className="bg-gray-400 hover:bg-gray-300 text-gray-950 py-0">Cadastrar</TabsTrigger>
               </TabsList>
 
               <TabsContent value="login">
