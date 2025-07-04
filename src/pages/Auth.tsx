@@ -191,7 +191,7 @@ const Auth = () => {
             <Tabs defaultValue="login" className="space-y-4">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Entrar</TabsTrigger>
-                <TabsTrigger value="signup" className="bg-gray-400 hover:bg-gray-300 text-gray-950 py-0">Cadastrar</TabsTrigger>
+                <TabsTrigger value="signup">Cadastrar</TabsTrigger>
               </TabsList>
 
               <TabsContent value="login">
@@ -220,7 +220,7 @@ const Auth = () => {
                       <Input id="signup-email" type="email" value={signupData.email} onChange={e => setSignupData({
                       ...signupData,
                       email: e.target.value
-                    })} inputMode="email" autoComplete="email" required className="h-12 text-base bg-gray-100" />
+                    })} className="h-12 text-base" inputMode="email" autoComplete="email" required />
                     </div>
 
                     <div className="space-y-3">
@@ -228,7 +228,7 @@ const Auth = () => {
                       <Input id="signup-password" type="password" value={signupData.password} onChange={e => setSignupData({
                       ...signupData,
                       password: e.target.value
-                    })} autoComplete="new-password" required className="h-12 text-base bg-gray-100" />
+                    })} className="h-12 text-base" autoComplete="new-password" required />
                     </div>
                   </div>
 
@@ -237,7 +237,7 @@ const Auth = () => {
                     <Input id="nome" value={signupData.nome} onChange={e => setSignupData({
                     ...signupData,
                     nome: e.target.value
-                  })} autoComplete="name" required className="h-12 text-base bg-gray-100" />
+                  })} className="h-12 text-base" autoComplete="name" required />
                   </div>
 
                   <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4">
@@ -246,7 +246,7 @@ const Auth = () => {
                       <Input id="telefone" value={signupData.telefone} onChange={e => setSignupData({
                       ...signupData,
                       telefone: e.target.value
-                    })} placeholder="(11) 99999-9999" inputMode="tel" autoComplete="tel" required className="h-12 text-base bg-gray-100" />
+                    })} placeholder="(11) 99999-9999" className="h-12 text-base" inputMode="tel" autoComplete="tel" required />
                     </div>
 
                     <div className="space-y-3">
@@ -254,7 +254,7 @@ const Auth = () => {
                       <Input id="whatsapp" value={signupData.whatsapp} onChange={e => setSignupData({
                       ...signupData,
                       whatsapp: e.target.value
-                    })} placeholder="Opcional" inputMode="tel" className="h-12 text-base bg-gray-100" />
+                    })} placeholder="Opcional" className="h-12 text-base" inputMode="tel" />
                     </div>
                   </div>
 
@@ -263,7 +263,7 @@ const Auth = () => {
                     <Input id="cidade" value={signupData.cidade} onChange={e => setSignupData({
                     ...signupData,
                     cidade: e.target.value
-                  })} autoComplete="address-level2" required className="h-12 text-base bg-gray-100" />
+                  })} className="h-12 text-base" autoComplete="address-level2" required />
                   </div>
 
                   <div className="space-y-3">
@@ -273,7 +273,7 @@ const Auth = () => {
                     tipo_profissional: value,
                     categoria_id: ""
                   })} required>
-                      <SelectTrigger className="h-12 text-base bg-gray-100">
+                      <SelectTrigger className="h-12 text-base">
                         <SelectValue placeholder="Selecione o tipo" />
                       </SelectTrigger>
                       <SelectContent>
@@ -316,7 +316,7 @@ const Auth = () => {
                     <Textarea id="descricao" value={signupData.descricao} onChange={e => setSignupData({
                     ...signupData,
                     descricao: e.target.value
-                  })} placeholder="Conte sobre sua experiência e serviços..." rows={4} className="text-base resize-none bg-zinc-100" />
+                  })} placeholder="Conte sobre sua experiência e serviços..." rows={4} className="text-base resize-none" />
                   </div>
 
                   {signupData.foto_perfil && <div className="space-y-2">
