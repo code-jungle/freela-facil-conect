@@ -129,8 +129,11 @@ const Auth = () => {
       if (authError) throw authError;
       toast({
         title: "Cadastro realizado com sucesso!",
-        description: "Verifique seu email para confirmar a conta. O perfil será criado automaticamente após a confirmação."
+        description: "Redirecionando para o painel..."
       });
+      
+      // Redirecionar automaticamente após cadastro bem-sucedido
+      navigate('/profile');
 
       // Limpar formulário
       setSignupData({
