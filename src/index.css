@@ -51,6 +51,9 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* iOS/Safari specific fixes */
+    --webkit-tap-highlight-color: transparent;
   }
 
   .dark {
@@ -113,5 +116,28 @@ All colors MUST be HSL.
   
   .gradient-card {
     background: var(--gradient-card);
+  }
+
+  /* iOS/Safari specific button fixes */
+  button {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-appearance: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Fix for iOS button rendering */
+  @supports (-webkit-touch-callout: none) {
+    button[data-variant="outline"] {
+      background-color: rgba(255, 255, 255, 0.9) !important;
+      border: 1px solid hsl(var(--border)) !important;
+      color: hsl(var(--foreground)) !important;
+    }
+
+    button[data-variant="outline"]:hover,
+    button[data-variant="outline"]:active {
+      background-color: hsl(var(--accent)) !important;
+      color: hsl(var(--accent-foreground)) !important;
+    }
   }
 }
