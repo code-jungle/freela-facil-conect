@@ -233,12 +233,6 @@ const ProfileDetail = () => {
                     </p>
                   </div>
                   
-                  <div className="bg-muted/50 p-4 rounded-lg">
-                    <h3 className="font-medium mb-2">Telefone</h3>
-                    <p className="text-muted-foreground">
-                      {profile.telefone}
-                    </p>
-                  </div>
                   
                   <div className="bg-muted/50 p-4 rounded-lg">
                     <h3 className="font-medium mb-2">Localização</h3>

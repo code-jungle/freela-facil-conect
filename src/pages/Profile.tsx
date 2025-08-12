@@ -46,7 +46,6 @@ const Profile = () => {
         .from('profiles')
         .update({
           nome: editData.nome,
-          telefone: editData.telefone,
           whatsapp: editData.whatsapp,
           cidade: editData.cidade,
           tipo_profissional: editData.tipo_profissional,

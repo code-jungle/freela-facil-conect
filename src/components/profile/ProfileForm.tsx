@@ -36,15 +36,6 @@ export const ProfileForm = ({
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="telefone">Telefone</Label>
-          <Input
-            id="telefone"
-            value={editing ? editData.telefone || '' : profileData.telefone}
-            onChange={(e) => onDataChange({...editData, telefone: e.target.value})}
-            disabled={!editing}
-          />
-        </div>
 
         <div className="space-y-2">
           <Label htmlFor="whatsapp">WhatsApp</Label>
