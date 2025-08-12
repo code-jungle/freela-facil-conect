@@ -147,7 +147,7 @@ const Index = () => {
   }, [searchTerm, selectedTipo, selectedCategoria, selectedCidade, profiles, categorias]);
 
   const gerarMensagemWhatsApp = (nome: string) => {
-    return encodeURIComponent(`Olá ${nome}, vi seu perfil no FreelaFácil e gostaria de saber mais sobre seus serviços.`);
+    return encodeURIComponent(`Olá ${nome}, vi seu perfil no Servix e gostaria de saber mais sobre seus serviços.`);
   };
 
   const handleWhatsAppClick = (profile: Profile) => {

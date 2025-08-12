@@ -77,7 +77,7 @@ const ProfileDetail = () => {
   }, [id]);
 
   const gerarMensagemWhatsApp = (nome: string) => {
-    return encodeURIComponent(`Olá ${nome}, vi seu perfil no FreelaFácil e gostaria de saber mais sobre seus serviços.`);
+    return encodeURIComponent(`Olá ${nome}, vi seu perfil no Servix e gostaria de saber mais sobre seus serviços.`);
   };
 
   if (loading) {
@@ -131,7 +131,7 @@ const ProfileDetail = () => {
                 Voltar
               </Button>
             </Link>
-            <h1 className="text-2xl font-bold text-foreground">FreelaFácil</h1>
+            <h1 className="text-2xl font-bold text-foreground">Servix</h1>
             <div className="w-20"></div> {/* Spacer for center alignment */}
           </div>
         </div>

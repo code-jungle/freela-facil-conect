@@ -186,7 +186,7 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link to="/">
-                <h1 className="text-2xl font-bold text-foreground">FreelaFácil</h1>
+                <h1 className="text-2xl font-bold text-foreground">Servix</h1>
               </Link>
               <span className="text-muted-foreground">Painel do Profissional</span>
             </div>

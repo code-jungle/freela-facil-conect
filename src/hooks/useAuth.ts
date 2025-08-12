@@ -196,7 +196,7 @@ export const useAuth = (): AuthHookReturn => {
       
       toast({
         title: "Cadastro realizado com sucesso!",
-        description: "Bem-vindo ao FreelaFácil! Redirecionando..."
+        description: "Bem-vindo ao Servix! Redirecionando..."
       });
 
       setTimeout(() => {
