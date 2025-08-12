@@ -17,7 +17,7 @@ export const Header = ({ user, navigating, onNavigation, onLogout }: HeaderProps
             <div className="w-8 h-8 gradient-primary rounded-lg flex items-center justify-center">
               <Zap className="w-5 h-5 text-white" />
             </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold text-gradient-primary">
               Servix
             </h1>
           </div>

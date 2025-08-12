@@ -14,7 +14,7 @@ export const HeroSection = ({ navigating, onNavigation }: HeroSectionProps) => {
         <div className="text-center max-w-4xl mx-auto">
           <h2 className="text-4xl md:text-6xl font-bold mb-6 text-foreground">
             Conecte-se com os 
-            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"> melhores profissionais</span>
+            <span className="text-gradient-hero"> melhores profissionais</span>
           </h2>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Encontre freelancers e prestadores de serviços qualificados de maneira rápido e fácil.
