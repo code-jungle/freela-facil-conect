@@ -142,7 +142,7 @@ All colors MUST be HSL.
   }
 
   .text-gradient-hero {
-    background-image: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(35 84% 60%) 45%, hsl(var(--primary)) 100%);
+    background-image: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--foreground)) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
