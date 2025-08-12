@@ -183,32 +183,6 @@ const ProfileDetail = () => {
                   </div>
 
                   {/* Botões de ação */}
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Button 
-                      size="lg"
-                      className="flex-1"
-                      onClick={() => {
-                        const whatsapp = profile.whatsapp || profile.telefone;
-                        const message = gerarMensagemWhatsApp(profile.nome);
-                        window.open(`https://wa.me/55${whatsapp.replace(/\D/g, '')}?text=${message}`, '_blank');
-                      }}
-                    >
-                      <Phone className="w-4 h-4 mr-2" />
-                      Chamar no WhatsApp
-                    </Button>
-                    
-                    <Button 
-                      variant="outline" 
-                      size="lg"
-                      onClick={() => {
-                        const whatsapp = profile.whatsapp || profile.telefone;
-                        window.open(`tel:${whatsapp}`, '_self');
-                      }}
-                    >
-                      <Phone className="w-4 h-4 mr-2" />
-                      Ligar
-                    </Button>
-                  </div>
                 </div>
               </div>
 
