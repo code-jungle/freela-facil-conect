@@ -8,7 +8,7 @@ export interface SignupFormData {
   email: string;
   password: string;
   nome: string;
-  telefone: string;
+  cep: string;
   whatsapp: string;
   cidade: string;
   tipo_profissional: string;

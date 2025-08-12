@@ -4,9 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertCircle } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AlertCircle, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPhone } from "@/utils/validation";
+import { buscarCep, formatCep } from "@/utils/cepService";
 import type { Categoria, SignupFormData, ValidationErrors } from "@/components/auth/types";
 
 interface SignupFormProps {
@@ -22,7 +24,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
     email: "",
     password: "",
     nome: "",
-    telefone: "",
+    cep: "",
     whatsapp: "",
     cidade: "",
     tipo_profissional: "",
@@ -30,6 +32,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
     descricao: "",
     foto_perfil: null
   });
+  const [cepLoading, setCepLoading] = useState(false);
 
   useEffect(() => {
     const fetchCategorias = async () => {
@@ -61,6 +64,21 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
 
   const updateFormData = (field: keyof SignupFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleCepChange = async (cepValue: string) => {
+    const cepFormatado = formatCep(cepValue);
+    updateFormData('cep', cepFormatado);
+    
+    const cepLimpo = cepValue.replace(/\D/g, '');
+    if (cepLimpo.length === 8) {
+      setCepLoading(true);
+      const dadosCep = await buscarCep(cepLimpo);
+      if (dadosCep) {
+        updateFormData('cidade', dadosCep.localidade);
+      }
+      setCepLoading(false);
+    }
   };
 
   return (
@@ -141,26 +159,28 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
 
       <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4">
         <div className="space-y-3">
-          <Label htmlFor="telefone">Telefone</Label>
-          <Input 
-            id="telefone" 
-            value={formData.telefone} 
-            onChange={e => {
-              const value = formatPhone(e.target.value);
-              updateFormData('telefone', value);
-              if (value) onValidateField('telefone', value);
-            }}
-            onBlur={e => onValidateField('telefone', e.target.value)}
-            placeholder="(11) 99999-9999" 
-            inputMode="tel" 
-            autoComplete="tel" 
-            required 
-            className={`h-12 text-base bg-gray-100 ${validationErrors.telefone ? 'border-red-500 focus:border-red-500' : ''}`}
-          />
-          {validationErrors.telefone && (
+          <Label htmlFor="cep">CEP</Label>
+          <div className="relative">
+            <Input 
+              id="cep" 
+              value={formData.cep} 
+              onChange={e => handleCepChange(e.target.value)}
+              placeholder="00000-000" 
+              inputMode="numeric" 
+              maxLength={9}
+              required 
+              className={`h-12 text-base bg-gray-100 pr-10 ${validationErrors.cep ? 'border-red-500 focus:border-red-500' : ''}`}
+            />
+            {cepLoading && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
+              </div>
+            )}
+          </div>
+          {validationErrors.cep && (
             <p className="text-sm text-red-500 flex items-center gap-1">
               <AlertCircle className="w-4 h-4" />
-              {validationErrors.telefone}
+              {validationErrors.cep}
             </p>
           )}
         </div>
@@ -173,29 +193,44 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
             onChange={e => {
               const value = formatPhone(e.target.value);
               updateFormData('whatsapp', value);
+              if (value) onValidateField('whatsapp', value);
             }}
-            placeholder="Opcional" 
+            onBlur={e => onValidateField('whatsapp', e.target.value)}
+            placeholder="(11) 99999-9999" 
             inputMode="tel" 
-            className="h-12 text-base bg-gray-100"
+            required
+            className={`h-12 text-base bg-gray-100 ${validationErrors.whatsapp ? 'border-red-500 focus:border-red-500' : ''}`}
           />
+          {validationErrors.whatsapp && (
+            <p className="text-sm text-red-500 flex items-center gap-1">
+              <AlertCircle className="w-4 h-4" />
+              {validationErrors.whatsapp}
+            </p>
+          )}
         </div>
       </div>
 
       <div className="space-y-3">
         <Label htmlFor="cidade">Cidade</Label>
-        <Input 
-          id="cidade" 
-          value={formData.cidade} 
-          onChange={e => {
-            const value = e.target.value;
-            updateFormData('cidade', value);
-            if (value) onValidateField('cidade', value);
-          }}
-          onBlur={e => onValidateField('cidade', e.target.value)}
-          autoComplete="address-level2" 
-          required 
-          className={`h-12 text-base bg-gray-100 ${validationErrors.cidade ? 'border-red-500 focus:border-red-500' : ''}`}
-        />
+        <div className="relative">
+          <Input 
+            id="cidade" 
+            value={formData.cidade} 
+            onChange={e => {
+              const value = e.target.value;
+              updateFormData('cidade', value);
+              if (value) onValidateField('cidade', value);
+            }}
+            onBlur={e => onValidateField('cidade', e.target.value)}
+            autoComplete="address-level2" 
+            required 
+            readOnly={!!formData.cep}
+            className={`h-12 text-base bg-gray-100 pr-10 ${validationErrors.cidade ? 'border-red-500 focus:border-red-500' : ''} ${!!formData.cep ? 'cursor-not-allowed opacity-75' : ''}`}
+          />
+          {formData.cep && (
+            <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-500" />
+          )}
+        </div>
         {validationErrors.cidade && (
           <p className="text-sm text-red-500 flex items-center gap-1">
             <AlertCircle className="w-4 h-4" />
@@ -204,24 +239,58 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
         )}
       </div>
 
-      <div className="space-y-3">
-        <Label htmlFor="tipo">Tipo de profissional</Label>
-        <Select 
+      <div className="space-y-4">
+        <Label>Tipo de profissional</Label>
+        <Tabs 
           value={formData.tipo_profissional} 
           onValueChange={value => {
             updateFormData('tipo_profissional', value);
             updateFormData('categoria_id', "");
-          }} 
-          required
+          }}
+          className="w-full"
         >
-          <SelectTrigger className={`h-12 text-base text-slate-900 bg-gray-100 ${validationErrors.tipo_profissional ? 'border-red-500' : ''}`}>
-            <SelectValue placeholder="Selecione o tipo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="freelancer">Freelancer</SelectItem>
-            <SelectItem value="prestador">Prestador de Serviço</SelectItem>
-          </SelectContent>
-        </Select>
+          <TabsList className="grid w-full grid-cols-2 h-12">
+            <TabsTrigger value="prestador" className="h-10">Prestação de Serviço</TabsTrigger>
+            <TabsTrigger value="freelancer" className="h-10">Freelancer</TabsTrigger>
+          </TabsList>
+          
+          {formData.tipo_profissional && (
+            <TabsContent value={formData.tipo_profissional} className="mt-4">
+              <div className="space-y-3">
+                <Label htmlFor="categoria">Categoria</Label>
+                <Select 
+                  value={formData.categoria_id} 
+                  onValueChange={value => {
+                    updateFormData('categoria_id', value);
+                    // Gerar descrição automática
+                    if (value && !formData.descricao) {
+                      const descricao = gerarDescricaoAutomatica(value, formData.tipo_profissional);
+                      updateFormData('descricao', descricao);
+                    }
+                  }} 
+                  required
+                >
+                  <SelectTrigger className={`h-12 text-base bg-gray-100 ${validationErrors.categoria_id ? 'border-red-500' : ''}`}>
+                    <SelectValue placeholder="Selecione a categoria" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    {categoriasFiltradas.map(categoria => (
+                      <SelectItem key={categoria.id} value={categoria.id}>
+                        {categoria.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {validationErrors.categoria_id && (
+                  <p className="text-sm text-red-500 flex items-center gap-1">
+                    <AlertCircle className="w-4 h-4" />
+                    {validationErrors.categoria_id}
+                  </p>
+                )}
+              </div>
+            </TabsContent>
+          )}
+        </Tabs>
         {validationErrors.tipo_profissional && (
           <p className="text-sm text-red-500 flex items-center gap-1">
             <AlertCircle className="w-4 h-4" />
@@ -229,41 +298,6 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
           </p>
         )}
       </div>
-
-      {formData.tipo_profissional && (
-        <div className="space-y-3">
-          <Label htmlFor="categoria">Categoria</Label>
-          <Select 
-            value={formData.categoria_id} 
-            onValueChange={value => {
-              updateFormData('categoria_id', value);
-              // Gerar descrição automática
-              if (value && !formData.descricao) {
-                const descricao = gerarDescricaoAutomatica(value, formData.tipo_profissional);
-                updateFormData('descricao', descricao);
-              }
-            }} 
-            required
-          >
-            <SelectTrigger className={`h-12 text-base ${validationErrors.categoria_id ? 'border-red-500' : ''}`}>
-              <SelectValue placeholder="Selecione a categoria" />
-            </SelectTrigger>
-            <SelectContent>
-              {categoriasFiltradas.map(categoria => (
-                <SelectItem key={categoria.id} value={categoria.id}>
-                  {categoria.nome}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {validationErrors.categoria_id && (
-            <p className="text-sm text-red-500 flex items-center gap-1">
-              <AlertCircle className="w-4 h-4" />
-              {validationErrors.categoria_id}
-            </p>
-          )}
-        </div>
-      )}
 
       <div className="space-y-3">
         <Label htmlFor="descricao">Descrição</Label>

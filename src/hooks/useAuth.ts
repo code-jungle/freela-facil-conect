@@ -24,11 +24,19 @@ export const useAuth = (): AuthHookReturn => {
           delete errors.email;
         }
         break;
-      case 'telefone':
+      case 'whatsapp':
         if (!validatePhone(value)) {
-          errors.telefone = 'Telefone deve ter 10 ou 11 dígitos';
+          errors.whatsapp = 'WhatsApp deve ter 10 ou 11 dígitos';
         } else {
-          delete errors.telefone;
+          delete errors.whatsapp;
+        }
+        break;
+      case 'cep':
+        const cepLimpo = value.replace(/\D/g, '');
+        if (cepLimpo.length !== 8) {
+          errors.cep = 'CEP deve ter 8 dígitos';
+        } else {
+          delete errors.cep;
         }
         break;
       case 'password':
@@ -80,8 +88,13 @@ export const useAuth = (): AuthHookReturn => {
       errors.nome = 'Nome é obrigatório';
     }
     
-    if (!validatePhone(data.telefone)) {
-      errors.telefone = 'Telefone inválido';
+    if (!validatePhone(data.whatsapp)) {
+      errors.whatsapp = 'WhatsApp é obrigatório';
+    }
+    
+    const cepLimpo = data.cep.replace(/\D/g, '');
+    if (cepLimpo.length !== 8) {
+      errors.cep = 'CEP inválido';
     }
     
     if (!validateRequired(data.cidade, 'Cidade').isValid) {
@@ -142,7 +155,8 @@ export const useAuth = (): AuthHookReturn => {
       console.log('Iniciando cadastro...', {
         email: data.email,
         nome: data.nome,
-        telefone: data.telefone,
+        cep: data.cep,
+        whatsapp: data.whatsapp,
         cidade: data.cidade,
         tipo_profissional: data.tipo_profissional,
         categoria_id: data.categoria_id
@@ -157,8 +171,8 @@ export const useAuth = (): AuthHookReturn => {
               emailRedirectTo: `${window.location.origin}/profile`,
               data: {
                 nome: data.nome.trim(),
-                telefone: data.telefone.replace(/\D/g, ''),
-                whatsapp: data.whatsapp?.replace(/\D/g, '') || data.telefone.replace(/\D/g, ''),
+                cep: data.cep.replace(/\D/g, ''),
+                whatsapp: data.whatsapp.replace(/\D/g, ''),
                 cidade: data.cidade.trim(),
                 tipo_profissional: data.tipo_profissional,
                 categoria_id: data.categoria_id,
