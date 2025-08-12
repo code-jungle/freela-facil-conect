@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertCircle, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPhone } from "@/utils/validation";
@@ -239,58 +238,24 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
         )}
       </div>
 
-      <div className="space-y-4">
-        <Label>Tipo de profissional</Label>
-        <Tabs 
+      <div className="space-y-3">
+        <Label htmlFor="tipo">Tipo de profissional</Label>
+        <Select 
           value={formData.tipo_profissional} 
           onValueChange={value => {
             updateFormData('tipo_profissional', value);
             updateFormData('categoria_id', "");
-          }}
-          className="w-full"
+          }} 
+          required
         >
-          <TabsList className="grid w-full grid-cols-2 h-12">
-            <TabsTrigger value="prestador" className="h-10">Prestação de Serviço</TabsTrigger>
-            <TabsTrigger value="freelancer" className="h-10">Freelancer</TabsTrigger>
-          </TabsList>
-          
-          {formData.tipo_profissional && (
-            <TabsContent value={formData.tipo_profissional} className="mt-4">
-              <div className="space-y-3">
-                <Label htmlFor="categoria">Categoria</Label>
-                <Select 
-                  value={formData.categoria_id} 
-                  onValueChange={value => {
-                    updateFormData('categoria_id', value);
-                    // Gerar descrição automática
-                    if (value && !formData.descricao) {
-                      const descricao = gerarDescricaoAutomatica(value, formData.tipo_profissional);
-                      updateFormData('descricao', descricao);
-                    }
-                  }} 
-                  required
-                >
-                  <SelectTrigger className={`h-12 text-base bg-gray-100 ${validationErrors.categoria_id ? 'border-red-500' : ''}`}>
-                    <SelectValue placeholder="Selecione a categoria" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    {categoriasFiltradas.map(categoria => (
-                      <SelectItem key={categoria.id} value={categoria.id}>
-                        {categoria.nome}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {validationErrors.categoria_id && (
-                  <p className="text-sm text-red-500 flex items-center gap-1">
-                    <AlertCircle className="w-4 h-4" />
-                    {validationErrors.categoria_id}
-                  </p>
-                )}
-              </div>
-            </TabsContent>
-          )}
-        </Tabs>
+          <SelectTrigger className={`h-12 text-base bg-gray-100 ${validationErrors.tipo_profissional ? 'border-red-500' : ''}`}>
+            <SelectValue placeholder="Selecione o tipo" />
+          </SelectTrigger>
+          <SelectContent className="bg-white">
+            <SelectItem value="prestador">Prestação de Serviço</SelectItem>
+            <SelectItem value="freelancer">Freelancer</SelectItem>
+          </SelectContent>
+        </Select>
         {validationErrors.tipo_profissional && (
           <p className="text-sm text-red-500 flex items-center gap-1">
             <AlertCircle className="w-4 h-4" />
@@ -298,6 +263,41 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
           </p>
         )}
       </div>
+
+      {formData.tipo_profissional && (
+        <div className="space-y-3">
+          <Label htmlFor="categoria">Categoria</Label>
+          <Select 
+            value={formData.categoria_id} 
+            onValueChange={value => {
+              updateFormData('categoria_id', value);
+              // Gerar descrição automática
+              if (value && !formData.descricao) {
+                const descricao = gerarDescricaoAutomatica(value, formData.tipo_profissional);
+                updateFormData('descricao', descricao);
+              }
+            }} 
+            required
+          >
+            <SelectTrigger className={`h-12 text-base bg-gray-100 ${validationErrors.categoria_id ? 'border-red-500' : ''}`}>
+              <SelectValue placeholder="Selecione a categoria" />
+            </SelectTrigger>
+            <SelectContent className="bg-white">
+              {categoriasFiltradas.map(categoria => (
+                <SelectItem key={categoria.id} value={categoria.id}>
+                  {categoria.nome}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {validationErrors.categoria_id && (
+            <p className="text-sm text-red-500 flex items-center gap-1">
+              <AlertCircle className="w-4 h-4" />
+              {validationErrors.categoria_id}
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="space-y-3">
         <Label htmlFor="descricao">Descrição</Label>
