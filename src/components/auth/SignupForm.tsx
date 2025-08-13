@@ -102,7 +102,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
             inputMode="email" 
             autoComplete="email" 
             required 
-            className={`h-12 text-base bg-card text-foreground placeholder:text-foreground ${validationErrors.email ? 'border-red-500 focus:border-red-500' : ''}`}
+            className={`h-12 text-base input-surface text-foreground placeholder:text-foreground ${validationErrors.email ? 'border-red-500 focus:border-red-500' : ''}`}
           />
           {validationErrors.email && (
             <p className="text-sm text-red-500 flex items-center gap-1">
@@ -126,7 +126,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
             onBlur={e => onValidateField('password', e.target.value)}
             autoComplete="new-password" 
             required 
-            className={`h-12 text-base bg-card text-foreground placeholder:text-foreground ${validationErrors.password ? 'border-red-500 focus:border-red-500' : ''}`}
+            className={`h-12 text-base input-surface text-foreground placeholder:text-foreground ${validationErrors.password ? 'border-red-500 focus:border-red-500' : ''}`}
            />
           {validationErrors.password && (
             <p className="text-sm text-red-500 flex items-center gap-1">
@@ -150,7 +150,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
           onBlur={e => onValidateField('nome', e.target.value)}
           autoComplete="name" 
           required 
-          className={`h-12 text-base bg-card text-foreground placeholder:text-foreground ${validationErrors.nome ? 'border-red-500 focus:border-red-500' : ''}`}
+          className={`h-12 text-base input-surface text-foreground placeholder:text-foreground ${validationErrors.nome ? 'border-red-500 focus:border-red-500' : ''}`}
         />
         {validationErrors.nome && (
           <p className="text-sm text-red-500 flex items-center gap-1">
@@ -172,7 +172,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
               inputMode="numeric" 
               maxLength={9}
               required 
-              className={`h-12 text-base bg-card text-foreground placeholder:text-foreground pr-10 ${validationErrors.cep ? 'border-red-500 focus:border-red-500' : ''}`}
+              className={`h-12 text-base input-surface text-foreground placeholder:text-foreground pr-10 ${validationErrors.cep ? 'border-red-500 focus:border-red-500' : ''}`}
             />
             {cepLoading && (
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -202,7 +202,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
             placeholder="(11) 99999-9999" 
             inputMode="tel" 
             required
-            className={`h-12 text-base bg-card text-foreground placeholder:text-foreground ${validationErrors.whatsapp ? 'border-red-500 focus:border-red-500' : ''}`}
+            className={`h-12 text-base input-surface text-foreground placeholder:text-foreground ${validationErrors.whatsapp ? 'border-red-500 focus:border-red-500' : ''}`}
           />
           {validationErrors.whatsapp && (
             <p className="text-sm text-red-500 flex items-center gap-1">
@@ -228,7 +228,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
             autoComplete="address-level2" 
             required 
             readOnly={!!formData.cep}
-            className={`h-12 text-base bg-card text-foreground placeholder:text-foreground pr-10 ${validationErrors.cidade ? 'border-red-500 focus:border-red-500' : ''} ${!!formData.cep ? 'cursor-not-allowed opacity-75' : ''}`}
+            className={`h-12 text-base input-surface text-foreground placeholder:text-foreground pr-10 ${validationErrors.cidade ? 'border-red-500 focus:border-red-500' : ''} ${!!formData.cep ? 'cursor-not-allowed opacity-75' : ''}`}
           />
           {formData.cep && (
             <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-500" />
@@ -252,7 +252,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
           }} 
           required
         >
-          <SelectTrigger className={`h-12 text-base bg-card text-foreground ${validationErrors.tipo_profissional ? 'border-red-500' : ''}`}>
+          <SelectTrigger className={`h-12 text-base input-surface text-foreground ${validationErrors.tipo_profissional ? 'border-red-500' : ''}`}>
             <SelectValue placeholder="Selecione o tipo" />
           </SelectTrigger>
           <SelectContent className="bg-card text-foreground">
@@ -278,7 +278,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
                 variant="outline"
                 role="combobox"
                 aria-expanded={openCategoria}
-                className={`w-full justify-between h-12 bg-card text-foreground ${validationErrors.categoria_id ? 'border-red-500' : ''}`}
+                className={`w-full justify-between h-12 input-surface text-foreground ${validationErrors.categoria_id ? 'border-red-500' : ''}`}
               >
                 {formData.categoria_id
                   ? (categorias.find(c => c.id === formData.categoria_id)?.nome || 'Selecionado')
@@ -330,7 +330,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
           onChange={e => updateFormData('descricao', e.target.value)}
           placeholder="Conte sobre sua experiência e serviços..." 
           rows={4} 
-          className="text-base resize-none bg-card text-foreground placeholder:text-foreground" 
+          className="text-base resize-none input-surface text-foreground placeholder:text-foreground" 
         />
       </div>
 
