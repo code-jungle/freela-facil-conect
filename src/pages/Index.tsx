@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Header, HeroSection, FilterSection, ProfessionalList, FeedbackButton } from "@/components/home";
+import { Header, HeroSection, FilterSection, ProfessionalList, FeedbackButton, PWAInstallButton } from "@/components/home";
 import { Profile, Categoria } from "@/types";
 
 const Index = () => {
@@ -221,8 +221,9 @@ const Index = () => {
           onWhatsAppClick={handleWhatsAppClick}
           onClearFilters={handleClearFilters}
         />
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8 flex flex-col items-center gap-2">
           <FeedbackButton />
+          <PWAInstallButton />
         </div>
       </main>
       <footer className="border-t border-border">

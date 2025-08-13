@@ -5,3 +5,4 @@ export { ProfessionalCard } from './ProfessionalCard';
 export { ProfessionalList } from './ProfessionalList';
 export { EmptyState } from './EmptyState';
 export { FeedbackButton } from './FeedbackButton';
+export { PWAInstallButton } from './PWAInstallButton';
