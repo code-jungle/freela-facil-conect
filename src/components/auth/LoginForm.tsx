@@ -29,7 +29,7 @@ export const LoginForm = ({ onSubmit, loading }: LoginFormProps) => {
           inputMode="email" 
           autoComplete="email" 
           required 
-          className="h-12 text-base bg-gray-100" 
+          className="h-12 text-base input-surface" 
         />
       </div>
 
@@ -42,7 +42,7 @@ export const LoginForm = ({ onSubmit, loading }: LoginFormProps) => {
           onChange={e => setPassword(e.target.value)} 
           autoComplete="current-password" 
           required 
-          className="h-12 text-base bg-zinc-100" 
+          className="h-12 text-base input-surface" 
         />
       </div>
 
