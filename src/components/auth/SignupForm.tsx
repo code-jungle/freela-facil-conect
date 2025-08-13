@@ -4,11 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertCircle, MapPin } from "lucide-react";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { AlertCircle, MapPin, ChevronsUpDown, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPhone } from "@/utils/validation";
 import { buscarCep, formatCep } from "@/utils/cepService";
 import type { Categoria, SignupFormData, ValidationErrors } from "@/components/auth/types";
+import { cn } from "@/lib/utils";
 
 interface SignupFormProps {
   onSubmit: (data: SignupFormData) => Promise<void>;
@@ -32,6 +35,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
     foto_perfil: null
   });
   const [cepLoading, setCepLoading] = useState(false);
+  const [openCategoria, setOpenCategoria] = useState(false);
 
   useEffect(() => {
     const fetchCategorias = async () => {
@@ -84,7 +88,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4">
         <div className="space-y-3">
-          <Label htmlFor="signup-email">Email</Label>
+          <Label htmlFor="signup-email">Email <span className="text-destructive" aria-hidden>*</span></Label>
           <Input 
             id="signup-email" 
             type="email" 
@@ -109,7 +113,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
         </div>
 
         <div className="space-y-3">
-          <Label htmlFor="signup-password">Senha</Label>
+          <Label htmlFor="signup-password">Senha <span className="text-destructive" aria-hidden>*</span></Label>
           <Input 
             id="signup-password" 
             type="password" 
@@ -134,7 +138,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
       </div>
 
       <div className="space-y-3">
-        <Label htmlFor="nome">Nome completo</Label>
+        <Label htmlFor="nome">Nome completo <span className="text-destructive" aria-hidden>*</span></Label>
         <Input 
           id="nome" 
           value={formData.nome} 
@@ -158,7 +162,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
 
       <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4">
         <div className="space-y-3">
-          <Label htmlFor="cep">CEP</Label>
+          <Label htmlFor="cep">CEP <span className="text-destructive" aria-hidden>*</span></Label>
           <div className="relative">
             <Input 
               id="cep" 
@@ -185,7 +189,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
         </div>
 
         <div className="space-y-3">
-          <Label htmlFor="whatsapp">WhatsApp</Label>
+          <Label htmlFor="whatsapp">WhatsApp <span className="text-destructive" aria-hidden>*</span></Label>
           <Input 
             id="whatsapp" 
             value={formData.whatsapp} 
@@ -210,7 +214,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
       </div>
 
       <div className="space-y-3">
-        <Label htmlFor="cidade">Cidade</Label>
+        <Label htmlFor="cidade">Cidade <span className="text-destructive" aria-hidden>*</span></Label>
         <div className="relative">
           <Input 
             id="cidade" 
@@ -239,7 +243,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
       </div>
 
       <div className="space-y-3">
-        <Label htmlFor="tipo">Tipo de profissional</Label>
+        <Label htmlFor="tipo">Tipo de profissional <span className="text-destructive" aria-hidden>*</span></Label>
         <Select 
           value={formData.tipo_profissional} 
           onValueChange={value => {
@@ -266,30 +270,49 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
 
       {formData.tipo_profissional && (
         <div className="space-y-3">
-          <Label htmlFor="categoria">Tipo de serviço</Label>
-          <Select 
-            value={formData.categoria_id} 
-            onValueChange={value => {
-              updateFormData('categoria_id', value);
-              // Gerar descrição automática
-              if (value && !formData.descricao) {
-                const descricao = gerarDescricaoAutomatica(value, formData.tipo_profissional);
-                updateFormData('descricao', descricao);
-              }
-            }} 
-            required
-          >
-            <SelectTrigger className={`h-12 text-base bg-card text-foreground ${validationErrors.categoria_id ? 'border-red-500' : ''}`}>
-              <SelectValue placeholder="Selecione o tipo de serviço" />
-            </SelectTrigger>
-            <SelectContent className="bg-card text-foreground">
-              {categoriasFiltradas.map(categoria => (
-                <SelectItem key={categoria.id} value={categoria.id}>
-                  {categoria.nome}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Label htmlFor="categoria">Tipo de serviço <span className="text-destructive" aria-hidden>*</span></Label>
+          <Popover open={openCategoria} onOpenChange={setOpenCategoria}>
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                role="combobox"
+                aria-expanded={openCategoria}
+                className={`w-full justify-between h-12 bg-card text-foreground ${validationErrors.categoria_id ? 'border-red-500' : ''}`}
+              >
+                {formData.categoria_id
+                  ? (categorias.find(c => c.id === formData.categoria_id)?.nome || 'Selecionado')
+                  : 'Selecione o tipo de serviço'}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-card text-foreground z-[80]" align="start">
+              <Command>
+                <CommandInput placeholder="Buscar tipo de serviço..." className="h-10" />
+                <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
+                <CommandGroup>
+                  {categoriasFiltradas.map((categoria) => (
+                    <CommandItem
+                      key={categoria.id}
+                      value={categoria.nome}
+                      onSelect={() => {
+                        updateFormData('categoria_id', categoria.id);
+                        if (!formData.descricao) {
+                          const descricao = gerarDescricaoAutomatica(categoria.id, formData.tipo_profissional);
+                          updateFormData('descricao', descricao);
+                        }
+                        setOpenCategoria(false);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <Check className={cn("mr-2 h-4 w-4", categoria.id === formData.categoria_id ? "opacity-100" : "opacity-0")} />
+                      {categoria.nome}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          </Popover>
           {validationErrors.categoria_id && (
             <p className="text-sm text-red-500 flex items-center gap-1">
               <AlertCircle className="w-4 h-4" />
