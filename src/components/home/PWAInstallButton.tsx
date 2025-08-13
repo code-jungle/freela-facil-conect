@@ -38,9 +38,26 @@ export const PWAInstallButton = () => {
     setDeferredPrompt(null);
   };
 
-  // Don't show if already installed or can't install
-  if (isInstalled || !canInstall || !deferredPrompt) {
+  // Don't show if already installed
+  if (isInstalled) {
     return null;
+  }
+
+  // Show installation instructions for browsers that support PWA but don't have the prompt yet
+  if (!deferredPrompt && canInstall) {
+    return (
+      <Button
+        onClick={() => {
+          alert('Para instalar o Servix:\n\n• Chrome/Edge: Clique no ícone de instalação na barra de endereços\n• Safari (iOS): Toque em "Compartilhar" → "Adicionar à Tela de Início"\n• Firefox: Menu → "Instalar este site como app"');
+        }}
+        variant="outline"
+        size="sm"
+        className="mt-2"
+      >
+        <Download className="w-4 h-4 mr-2" />
+        Como Instalar
+      </Button>
+    );
   }
 
   return (
