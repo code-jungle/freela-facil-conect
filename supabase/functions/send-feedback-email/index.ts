@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@4.0.0";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY") as string);
+// Resend client is initialized per-request for better error handling
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -27,6 +27,16 @@ serve(async (req: Request): Promise<Response> => {
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
+
+    const apiKey = Deno.env.get("RESEND_API_KEY");
+    if (!apiKey) {
+      console.error("Missing RESEND_API_KEY");
+      return new Response(JSON.stringify({ error: "Serviço de e-mail não configurado" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+    const resend = new Resend(apiKey);
 
     const { name, email, message, rating }: FeedbackPayload = await req.json();
 
@@ -57,7 +67,7 @@ serve(async (req: Request): Promise<Response> => {
       </div>
     `;
 
-    const emailResponse = await resend.emails.send({
+    const { data, error: sendError } = await resend.emails.send({
       from: "Servix <onboarding@resend.dev>",
       to: ["codejungle8@gmail.com"],
       subject: "Novo feedback do site Servix",
@@ -65,9 +75,17 @@ serve(async (req: Request): Promise<Response> => {
       reply_to: safeEmail || undefined,
     });
 
-    console.log("Feedback email sent", { id: (emailResponse as any)?.data?.id });
+    if (sendError) {
+      console.error("Resend error", sendError);
+      return new Response(
+        JSON.stringify({ error: sendError.message || "Falha ao enviar e-mail" }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
 
-    return new Response(JSON.stringify({ success: true }), {
+    console.log("Feedback email sent", { id: data?.id });
+
+    return new Response(JSON.stringify({ success: true, id: data?.id }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
