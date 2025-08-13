@@ -23,10 +23,15 @@ export const useProfileData = () => {
         return;
       }
 
-      // Fetch user profile
+      // Fetch user profile with categories
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select(`
+          *,
+          profile_categorias!inner (
+            categoria_id
+          )
+        `)
         .eq('user_id', session.user.id)
         .single();
 
@@ -38,8 +43,14 @@ export const useProfileData = () => {
           variant: "destructive",
         });
       } else {
-        setProfileData(profile);
-        setEditData(profile);
+        // Transform data to include categoria_ids
+        const categoria_ids = profile.profile_categorias?.map(pc => pc.categoria_id) || [];
+        const profileWithCategories = {
+          ...profile,
+          categoria_ids
+        };
+        setProfileData(profileWithCategories);
+        setEditData(profileWithCategories);
         
         // Check for pending photo from user metadata
         const hasPendingPhoto = session.user.user_metadata?.has_pending_photo === "true";

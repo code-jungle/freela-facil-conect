@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Switch } from "@/components/ui/switch";
+import { ProfileForm } from "@/components/profile/ProfileForm";
 import { User, LogOut, Eye, Edit, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -43,6 +44,8 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [openCategoria, setOpenCategoria] = useState(false);
+  const [editData, setEditData] = useState<Partial<Profile>>({});
 
   // Verificar autenticação e carregar dados
   useEffect(() => {
@@ -78,10 +81,12 @@ const Dashboard = () => {
       } else {
         // Extrair IDs das categorias
         const categoria_ids = profileData.profile_categorias?.map(pc => pc.categoria_id) || [];
-        setProfile({
+        const profileWithCategories = {
           ...profileData,
           categoria_ids
-        });
+        };
+        setProfile(profileWithCategories);
+        setEditData(profileWithCategories);
       }
 
       // Buscar categorias
@@ -116,7 +121,7 @@ const Dashboard = () => {
   };
 
   const handleSaveProfile = async () => {
-    if (!profile || !user) return;
+    if (!profile || !user || !editData) return;
 
     setSaving(true);
 
@@ -125,22 +130,22 @@ const Dashboard = () => {
       const { error: profileError } = await supabase
         .from('profiles')
         .update({
-          nome: profile.nome,
-          telefone: profile.telefone,
-          whatsapp: profile.whatsapp,
-          cidade: profile.cidade,
-          tipo_profissional: profile.tipo_profissional,
-          categoria_id: profile.categoria_ids[0] || profile.categoria_id, // Manter compatibilidade
-          descricao: profile.descricao,
-          foto_perfil: profile.foto_perfil,
-          ativo: profile.ativo,
+          nome: editData.nome || profile.nome,
+          telefone: editData.telefone || profile.telefone,
+          whatsapp: editData.whatsapp || profile.whatsapp,
+          cidade: editData.cidade || profile.cidade,
+          tipo_profissional: editData.tipo_profissional || profile.tipo_profissional,
+          categoria_id: editData.categoria_ids?.[0] || profile.categoria_id, // Manter compatibilidade
+          descricao: editData.descricao || profile.descricao,
+          foto_perfil: editData.foto_perfil || profile.foto_perfil,
+          ativo: editData.ativo ?? profile.ativo,
         })
         .eq('user_id', user.id);
 
       if (profileError) throw profileError;
 
       // Atualizar categorias
-      if (profile.categoria_ids && profile.categoria_ids.length > 0) {
+      if (editData.categoria_ids && editData.categoria_ids.length > 0) {
         // Remover categorias existentes
         await supabase
           .from('profile_categorias')
@@ -148,7 +153,7 @@ const Dashboard = () => {
           .eq('profile_id', profile.id);
 
         // Inserir novas categorias
-        const categoriasToInsert = profile.categoria_ids.map(categoria_id => ({
+        const categoriasToInsert = editData.categoria_ids.map(categoria_id => ({
           profile_id: profile.id,
           categoria_id
         }));
@@ -159,6 +164,11 @@ const Dashboard = () => {
 
         if (categoriasError) throw categoriasError;
       }
+
+      // Atualizar estado local
+      const updatedProfile = { ...profile, ...editData };
+      setProfile(updatedProfile);
+      setEditData({});
 
       toast({
         title: "Perfil atualizado!",
@@ -305,7 +315,15 @@ const Dashboard = () => {
                   </div>
                   <Button
                     variant={editMode ? "destructive" : "default"}
-                    onClick={() => editMode ? setEditMode(false) : setEditMode(true)}
+                    onClick={() => {
+                      if (editMode) {
+                        setEditMode(false);
+                        setEditData({});
+                      } else {
+                        setEditMode(true);
+                        setEditData(profile);
+                      }
+                    }}
                   >
                     {editMode ? "Cancelar" : "Editar"}
                   </Button>
@@ -313,131 +331,15 @@ const Dashboard = () => {
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="nome">Nome completo</Label>
-                    <Input
-                      id="nome"
-                      value={profile.nome}
-                      onChange={(e) => setProfile({...profile, nome: e.target.value})}
-                      disabled={!editMode}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="cidade">Cidade</Label>
-                    <Input
-                      id="cidade"
-                      value={profile.cidade}
-                      onChange={(e) => setProfile({...profile, cidade: e.target.value})}
-                      disabled={!editMode}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="telefone">Telefone</Label>
-                    <Input
-                      id="telefone"
-                      value={profile.telefone}
-                      onChange={(e) => setProfile({...profile, telefone: e.target.value})}
-                      disabled={!editMode}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="whatsapp">WhatsApp</Label>
-                    <Input
-                      id="whatsapp"
-                      value={profile.whatsapp}
-                      onChange={(e) => setProfile({...profile, whatsapp: e.target.value})}
-                      disabled={!editMode}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="tipo">Tipo de profissional</Label>
-                    <ToggleGroup 
-                      type="multiple"
-                      value={profile.tipo_profissional} 
-                      onValueChange={(value) => setProfile({...profile, tipo_profissional: value, categoria_id: ""})}
-                      disabled={!editMode}
-                      className="justify-start gap-2"
-                    >
-                      <ToggleGroupItem 
-                        value="freelancer" 
-                        className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-                      >
-                        Freelancer
-                      </ToggleGroupItem>
-                      <ToggleGroupItem 
-                        value="prestador" 
-                        className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-                      >
-                        Prestador de Serviço
-                      </ToggleGroupItem>
-                    </ToggleGroup>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="categoria">Especialidades</Label>
-                    <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto border rounded-md p-3 bg-muted/20">
-                      {categoriasFiltradas.map((categoria) => (
-                        <label key={categoria.id} className="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-muted/50">
-                          <input
-                            type="checkbox"
-                            checked={profile.categoria_ids?.includes(categoria.id) || false}
-                            onChange={(e) => {
-                              const isChecked = e.target.checked;
-                              const currentIds = profile.categoria_ids || [];
-                              let newIds;
-                              
-                              if (isChecked) {
-                                newIds = [...currentIds, categoria.id];
-                              } else {
-                                newIds = currentIds.filter(id => id !== categoria.id);
-                              }
-                              
-                              setProfile({
-                                ...profile, 
-                                categoria_ids: newIds,
-                                categoria_id: newIds[0] || '' // Manter compatibilidade
-                              });
-                            }}
-                            disabled={!editMode}
-                            className="rounded border-border"
-                          />
-                          <span className="text-sm">{categoria.nome}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="descricao">Descrição</Label>
-                  <Textarea
-                    id="descricao"
-                    value={profile.descricao || ""}
-                    onChange={(e) => setProfile({...profile, descricao: e.target.value})}
-                    disabled={!editMode}
-                    rows={4}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="foto">URL da foto de perfil</Label>
-                  <Input
-                    id="foto"
-                    type="url"
-                    value={profile.foto_perfil || ""}
-                    onChange={(e) => setProfile({...profile, foto_perfil: e.target.value})}
-                    disabled={!editMode}
-                  />
-                </div>
+                <ProfileForm
+                  editing={editMode}
+                  profileData={profile}
+                  editData={editData}
+                  categorias={categorias}
+                  onDataChange={setEditData}
+                  openCategoria={openCategoria}
+                  setOpenCategoria={setOpenCategoria}
+                />
 
                 {editMode && (
                   <Button onClick={handleSaveProfile} disabled={saving} className="w-full">

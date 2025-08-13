@@ -282,37 +282,86 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
         <div className="space-y-3">
           <Label htmlFor="categoria">Tipos de serviço <span className="text-destructive" aria-hidden>*</span></Label>
           <p className="text-sm text-muted-foreground mb-2">Selecione uma ou mais categorias:</p>
-          <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto border rounded-md p-3 bg-muted/20">
-            {categoriasFiltradas.map((categoria) => (
-              <label key={categoria.id} className="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-muted/50">
-                <input
-                  type="checkbox"
-                  checked={formData.categoria_ids.includes(categoria.id)}
-                  onChange={(e) => {
-                    const isChecked = e.target.checked;
-                    const currentIds = formData.categoria_ids;
-                    let newIds;
-                    
-                    if (isChecked) {
-                      newIds = [...currentIds, categoria.id];
-                    } else {
-                      newIds = currentIds.filter(id => id !== categoria.id);
-                    }
-                    
-                    updateFormData('categoria_ids', newIds);
-                    
-                    // Atualizar descrição automaticamente apenas se vazia
-                    if (!formData.descricao && newIds.length > 0) {
-                      const descricao = gerarDescricaoAutomatica(newIds[0], formData.tipo_profissional);
-                      updateFormData('descricao', descricao);
-                    }
-                  }}
-                  className="rounded border-border"
-                />
-                <span className="text-sm">{categoria.nome}</span>
-              </label>
-            ))}
-          </div>
+          
+          {/* Mostrar categorias selecionadas */}
+          {formData.categoria_ids.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-2">
+              {formData.categoria_ids.map(id => {
+                const categoria = categorias.find(c => c.id === id);
+                return categoria ? (
+                  <div key={id} className="flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded-md text-sm">
+                    <span>{categoria.nome}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newIds = formData.categoria_ids.filter(catId => catId !== id);
+                        updateFormData('categoria_ids', newIds);
+                      }}
+                      className="ml-1 hover:bg-primary/20 rounded-full p-0.5"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ) : null;
+              })}
+            </div>
+          )}
+
+          <Popover open={openCategoria} onOpenChange={setOpenCategoria}>
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                role="combobox"
+                aria-expanded={openCategoria}
+                className={`w-full justify-between h-12 input-surface text-foreground ${validationErrors.categoria_ids ? 'border-red-500' : ''}`}
+              >
+                {formData.categoria_ids.length > 0
+                  ? `${formData.categoria_ids.length} categoria${formData.categoria_ids.length > 1 ? 's' : ''} selecionada${formData.categoria_ids.length > 1 ? 's' : ''}`
+                  : 'Selecione os tipos de serviço'}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-card text-foreground z-[80]" align="start">
+              <Command>
+                <CommandInput placeholder="Buscar tipo de serviço..." className="h-10" />
+                <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
+                <CommandList>
+                  <CommandGroup>
+                    {categoriasFiltradas.map((categoria) => (
+                      <CommandItem
+                        key={categoria.id}
+                        value={categoria.nome}
+                        onSelect={() => {
+                          const isSelected = formData.categoria_ids.includes(categoria.id);
+                          let newIds;
+                          
+                          if (isSelected) {
+                            newIds = formData.categoria_ids.filter(id => id !== categoria.id);
+                          } else {
+                            newIds = [...formData.categoria_ids, categoria.id];
+                          }
+                          
+                          updateFormData('categoria_ids', newIds);
+                          
+                          // Atualizar descrição automaticamente apenas se vazia
+                          if (!formData.descricao && newIds.length > 0) {
+                            const descricao = gerarDescricaoAutomatica(newIds[0], formData.tipo_profissional);
+                            updateFormData('descricao', descricao);
+                          }
+                        }}
+                        className="cursor-pointer"
+                      >
+                        <Check className={cn("mr-2 h-4 w-4", formData.categoria_ids.includes(categoria.id) ? "opacity-100" : "opacity-0")} />
+                        {categoria.nome}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+          
           {validationErrors.categoria_ids && (
             <p className="text-sm text-red-500 flex items-center gap-1">
               <AlertCircle className="w-4 h-4" />
