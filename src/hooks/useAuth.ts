@@ -101,8 +101,8 @@ export const useAuth = (): AuthHookReturn => {
       errors.cidade = 'Cidade é obrigatória';
     }
     
-    if (!data.tipo_profissional) {
-      errors.tipo_profissional = 'Tipo de profissional é obrigatório';
+    if (!data.tipo_profissional || data.tipo_profissional.length === 0) {
+      errors.tipo_profissional = 'Pelo menos um tipo de profissional é obrigatório';
     }
     
     if (!data.categoria_id) {

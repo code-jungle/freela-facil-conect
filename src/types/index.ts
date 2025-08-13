@@ -2,7 +2,7 @@ export interface Profile {
   id: string;
   nome: string;
   cidade: string;
-  tipo_profissional: string;
+  tipo_profissional: string[];
   descricao: string;
   foto_perfil: string;
   whatsapp: string;

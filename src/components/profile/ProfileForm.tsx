@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { ProfileData, EditData, Categoria } from "./types";
 
 interface ProfileFormProps {
@@ -19,8 +20,8 @@ export const ProfileForm = ({
   categorias, 
   onDataChange 
 }: ProfileFormProps) => {
-  const categoriasFiltradas = editData.tipo_profissional 
-    ? categorias.filter(c => c.tipo_profissional === editData.tipo_profissional)
+  const categoriasFiltradas = (editData.tipo_profissional && editData.tipo_profissional.length > 0)
+    ? categorias.filter(c => editData.tipo_profissional!.includes(c.tipo_profissional))
     : [];
 
   return (
@@ -60,19 +61,26 @@ export const ProfileForm = ({
 
         <div className="space-y-2">
           <Label htmlFor="tipo">Tipo de profissional</Label>
-          <Select 
-            value={editing ? editData.tipo_profissional || '' : profileData.tipo_profissional}
+          <ToggleGroup 
+            type="multiple"
+            value={editing ? editData.tipo_profissional || [] : profileData.tipo_profissional || []}
             onValueChange={(value) => onDataChange({...editData, tipo_profissional: value, categoria_id: ''})}
             disabled={!editing}
+            className="justify-start gap-2"
           >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="freelancer">Freelancer</SelectItem>
-              <SelectItem value="prestador">Prestador de Serviço</SelectItem>
-            </SelectContent>
-          </Select>
+            <ToggleGroupItem 
+              value="freelancer" 
+              className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+            >
+              Freelancer
+            </ToggleGroupItem>
+            <ToggleGroupItem 
+              value="prestador" 
+              className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+            >
+              Prestador de Serviço
+            </ToggleGroupItem>
+          </ToggleGroup>
         </div>
 
         <div className="space-y-2">

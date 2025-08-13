@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Switch } from "@/components/ui/switch";
 import { User, LogOut, Eye, Edit, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,7 +19,7 @@ interface Profile {
   telefone: string;
   whatsapp: string;
   cidade: string;
-  tipo_profissional: string;
+  tipo_profissional: string[];
   categoria_id: string;
   descricao: string;
   foto_perfil: string;
@@ -116,7 +117,7 @@ const Dashboard = () => {
           telefone: profile.telefone,
           whatsapp: profile.whatsapp,
           cidade: profile.cidade,
-          tipo_profissional: profile.tipo_profissional,
+            tipo_profissional: profile.tipo_profissional,
           categoria_id: profile.categoria_id,
           descricao: profile.descricao,
           foto_perfil: profile.foto_perfil,
@@ -143,8 +144,8 @@ const Dashboard = () => {
     }
   };
 
-  const categoriasFiltradas = profile?.tipo_profissional 
-    ? categorias.filter(c => c.tipo_profissional === profile.tipo_profissional)
+  const categoriasFiltradas = profile?.tipo_profissional && profile.tipo_profissional.length > 0
+    ? categorias.filter(c => profile.tipo_profissional.includes(c.tipo_profissional))
     : [];
 
   if (loading) {
@@ -247,9 +248,9 @@ const Dashboard = () => {
                 <div className="text-2xl font-bold">
                   {categorias.find(c => c.id === profile.categoria_id)?.nome || 'N/A'}
                 </div>
-                <p className="text-xs text-muted-foreground capitalize">
-                  {profile.tipo_profissional}
-                </p>
+                    <p className="text-xs text-muted-foreground capitalize">
+                      {profile.tipo_profissional.join(', ')}
+                    </p>
               </CardContent>
             </Card>
           </div>
@@ -322,19 +323,26 @@ const Dashboard = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="tipo">Tipo de profissional</Label>
-                    <Select 
+                    <ToggleGroup 
+                      type="multiple"
                       value={profile.tipo_profissional} 
                       onValueChange={(value) => setProfile({...profile, tipo_profissional: value, categoria_id: ""})}
                       disabled={!editMode}
+                      className="justify-start gap-2"
                     >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="freelancer">Freelancer</SelectItem>
-                        <SelectItem value="prestador">Prestador de Serviço</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      <ToggleGroupItem 
+                        value="freelancer" 
+                        className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                      >
+                        Freelancer
+                      </ToggleGroupItem>
+                      <ToggleGroupItem 
+                        value="prestador" 
+                        className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                      >
+                        Prestador de Serviço
+                      </ToggleGroupItem>
+                    </ToggleGroup>
                   </div>
 
                   <div className="space-y-2">

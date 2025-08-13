@@ -9,7 +9,7 @@ interface Profile {
   id: string;
   nome: string;
   cidade: string;
-  tipo_profissional: string;
+  tipo_profissional: string[];
   descricao: string;
   foto_perfil: string;
   whatsapp: string;
@@ -173,7 +173,7 @@ const ProfileDetail = () => {
                     
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <User className="w-4 h-4" />
-                      <span className="capitalize">{profile.tipo_profissional}</span>
+                      <span className="capitalize">{profile.tipo_profissional.join(', ')}</span>
                     </div>
 
                     <div className="flex items-center gap-2 text-muted-foreground">

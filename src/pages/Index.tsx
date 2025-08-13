@@ -122,7 +122,7 @@ const Index = () => {
 
       // Filtro por tipo
       if (selectedTipo !== "todos") {
-        filtered = filtered.filter(profile => profile.tipo_profissional === selectedTipo);
+        filtered = filtered.filter(profile => profile.tipo_profissional.includes(selectedTipo));
       }
 
       // Filtro por categoria

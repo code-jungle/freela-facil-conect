@@ -10,7 +10,7 @@ export interface ProfileData {
   telefone: string;
   whatsapp: string | null;
   cidade: string;
-  tipo_profissional: string;
+  tipo_profissional: string[];
   categoria_id: string;
   descricao: string | null;
   foto_perfil: string | null;

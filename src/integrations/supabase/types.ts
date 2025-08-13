@@ -91,7 +91,7 @@ export type Database = {
           id: string
           nome: string
           telefone: string
-          tipo_profissional: string
+          tipo_profissional: string[]
           updated_at: string
           user_id: string
           visualizacoes: number
@@ -107,7 +107,7 @@ export type Database = {
           id?: string
           nome: string
           telefone: string
-          tipo_profissional: string
+          tipo_profissional?: string[]
           updated_at?: string
           user_id: string
           visualizacoes?: number
@@ -123,7 +123,7 @@ export type Database = {
           id?: string
           nome?: string
           telefone?: string
-          tipo_profissional?: string
+          tipo_profissional?: string[]
           updated_at?: string
           user_id?: string
           visualizacoes?: number

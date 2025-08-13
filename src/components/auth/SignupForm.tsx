@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { AlertCircle, MapPin, ChevronsUpDown, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPhone } from "@/utils/validation";
@@ -29,7 +30,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
     cep: "",
     whatsapp: "",
     cidade: "",
-    tipo_profissional: "",
+    tipo_profissional: [],
     categoria_id: "",
     descricao: "",
     foto_perfil: null
@@ -49,14 +50,16 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
     fetchCategorias();
   }, []);
 
-  const categoriasFiltradas = formData.tipo_profissional 
-    ? categorias.filter(c => c.tipo_profissional === formData.tipo_profissional) 
+  const categoriasFiltradas = formData.tipo_profissional.length > 0
+    ? categorias.filter(c => formData.tipo_profissional.includes(c.tipo_profissional)) 
     : [];
 
-  const gerarDescricaoAutomatica = (categoria: string, tipo: string) => {
+  const gerarDescricaoAutomatica = (categoria: string, tipos: string[]) => {
     const categoria_obj = categorias.find(c => c.id === categoria);
     if (!categoria_obj) return "";
-    const tipoTexto = tipo === 'freelancer' ? 'freelancer' : 'prestador de serviços';
+    const tipoTexto = tipos.length > 1 
+      ? 'profissional versátil que atua tanto como freelancer quanto prestador de serviços'
+      : tipos[0] === 'freelancer' ? 'freelancer' : 'prestador de serviços';
     return `Sou ${tipoTexto} especializado em ${categoria_obj.nome.toLowerCase()}. Tenho experiência na área e estou sempre disponível para novos projetos. Entre em contato para conhecer melhor meu trabalho!`;
   };
 
@@ -244,22 +247,29 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
 
       <div className="space-y-3">
         <Label htmlFor="tipo">Tipo de profissional <span className="text-destructive" aria-hidden>*</span></Label>
-        <Select 
+        <p className="text-sm text-muted-foreground mb-2">Selecione um ou ambos os tipos:</p>
+        <ToggleGroup 
+          type="multiple" 
           value={formData.tipo_profissional} 
-          onValueChange={value => {
+          onValueChange={(value) => {
             updateFormData('tipo_profissional', value);
             updateFormData('categoria_id', "");
-          }} 
-          required
+          }}
+          className={`justify-start gap-2 ${validationErrors.tipo_profissional ? 'border border-red-500 rounded-md p-2' : ''}`}
         >
-          <SelectTrigger className={`h-12 text-base input-surface text-foreground ${validationErrors.tipo_profissional ? 'border-red-500' : ''}`}>
-            <SelectValue placeholder="Selecione o tipo" />
-          </SelectTrigger>
-          <SelectContent className="bg-card text-foreground">
-            <SelectItem value="prestador">Prestação de Serviço</SelectItem>
-            <SelectItem value="freelancer">Freelancer</SelectItem>
-          </SelectContent>
-        </Select>
+          <ToggleGroupItem 
+            value="prestador" 
+            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+          >
+            Prestação de Serviço
+          </ToggleGroupItem>
+          <ToggleGroupItem 
+            value="freelancer" 
+            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+          >
+            Freelancer
+          </ToggleGroupItem>
+        </ToggleGroup>
         {validationErrors.tipo_profissional && (
           <p className="text-sm text-red-500 flex items-center gap-1">
             <AlertCircle className="w-4 h-4" />
@@ -268,7 +278,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
         )}
       </div>
 
-      {formData.tipo_profissional && (
+      {formData.tipo_profissional.length > 0 && (
         <div className="space-y-3">
           <Label htmlFor="categoria">Tipo de serviço <span className="text-destructive" aria-hidden>*</span></Label>
           <Popover open={openCategoria} onOpenChange={setOpenCategoria}>

@@ -11,7 +11,7 @@ export interface SignupFormData {
   cep: string;
   whatsapp: string;
   cidade: string;
-  tipo_profissional: string;
+  tipo_profissional: string[];
   categoria_id: string;
   descricao: string;
   foto_perfil: File | null;
