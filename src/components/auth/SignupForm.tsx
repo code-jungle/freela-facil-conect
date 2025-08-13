@@ -54,13 +54,26 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
     ? categorias.filter(c => formData.tipo_profissional.includes(c.tipo_profissional)) 
     : [];
 
-  const gerarDescricaoAutomatica = (categoria: string, tipos: string[]) => {
-    const categoria_obj = categorias.find(c => c.id === categoria);
-    if (!categoria_obj) return "";
+  const gerarDescricaoAutomatica = (categoriaIds: string[], tipos: string[]) => {
+    if (categoriaIds.length === 0 || tipos.length === 0) return "";
+    
+    const categoriasNomes = categoriaIds
+      .map(id => categorias.find(c => c.id === id)?.nome)
+      .filter(Boolean);
+    
+    if (categoriasNomes.length === 0) return "";
+    
     const tipoTexto = tipos.length > 1 
       ? 'profissional versátil que atua tanto como freelancer quanto prestador de serviços'
       : tipos[0] === 'freelancer' ? 'freelancer' : 'prestador de serviços';
-    return `Sou ${tipoTexto} especializado em ${categoria_obj.nome.toLowerCase()}. Tenho experiência na área e estou sempre disponível para novos projetos. Entre em contato para conhecer melhor meu trabalho!`;
+    
+    const servicosTexto = categoriasNomes.length === 1
+      ? categoriasNomes[0].toLowerCase()
+      : categoriasNomes.length === 2
+        ? `${categoriasNomes[0].toLowerCase()} e ${categoriasNomes[1].toLowerCase()}`
+        : `${categoriasNomes.slice(0, -1).map(s => s.toLowerCase()).join(', ')} e ${categoriasNomes[categoriasNomes.length - 1].toLowerCase()}`;
+    
+    return `Sou ${tipoTexto} especializado em ${servicosTexto}. Tenho experiência na área e estou sempre disponível para novos projetos. Entre em contato para conhecer melhor meu trabalho!`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -254,6 +267,14 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
           onValueChange={(value) => {
             updateFormData('tipo_profissional', value);
             updateFormData('categoria_ids', []);
+            
+            // Gerar nova descrição se houver tipos e categorias selecionadas
+            if (value.length > 0 && formData.categoria_ids.length > 0) {
+              const novaDescricao = gerarDescricaoAutomatica(formData.categoria_ids, value);
+              updateFormData('descricao', novaDescricao);
+            } else if (value.length === 0) {
+              updateFormData('descricao', '');
+            }
           }}
           className={`justify-start gap-2 ${validationErrors.tipo_profissional ? 'border border-red-500 rounded-md p-2' : ''}`}
         >
@@ -296,6 +317,14 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
                       onClick={() => {
                         const newIds = formData.categoria_ids.filter(catId => catId !== id);
                         updateFormData('categoria_ids', newIds);
+                        
+                        // Atualizar descrição após remoção
+                        if (newIds.length > 0 && formData.tipo_profissional.length > 0) {
+                          const novaDescricao = gerarDescricaoAutomatica(newIds, formData.tipo_profissional);
+                          updateFormData('descricao', novaDescricao);
+                        } else if (newIds.length === 0) {
+                          updateFormData('descricao', '');
+                        }
                       }}
                       className="ml-1 hover:bg-primary/20 rounded-full p-0.5"
                     >
@@ -344,10 +373,12 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
                           
                           updateFormData('categoria_ids', newIds);
                           
-                          // Atualizar descrição automaticamente apenas se vazia
-                          if (!formData.descricao && newIds.length > 0) {
-                            const descricao = gerarDescricaoAutomatica(newIds[0], formData.tipo_profissional);
-                            updateFormData('descricao', descricao);
+                          // Atualizar descrição automaticamente sempre
+                          if (newIds.length > 0 && formData.tipo_profissional.length > 0) {
+                            const novaDescricao = gerarDescricaoAutomatica(newIds, formData.tipo_profissional);
+                            updateFormData('descricao', novaDescricao);
+                          } else if (newIds.length === 0) {
+                            updateFormData('descricao', '');
                           }
                         }}
                         className="cursor-pointer"

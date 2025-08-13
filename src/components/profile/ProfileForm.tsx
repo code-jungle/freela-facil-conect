@@ -33,6 +33,28 @@ export const ProfileForm = ({
     ? categorias.filter(c => editData.tipo_profissional!.includes(c.tipo_profissional))
     : [];
 
+  const gerarDescricaoAutomatica = (categoriaIds: string[], tipos: string[]) => {
+    if (categoriaIds.length === 0 || tipos.length === 0) return "";
+    
+    const categoriasNomes = categoriaIds
+      .map(id => categorias.find(c => c.id === id)?.nome)
+      .filter(Boolean);
+    
+    if (categoriasNomes.length === 0) return "";
+    
+    const tipoTexto = tipos.length > 1 
+      ? 'profissional versátil que atua tanto como freelancer quanto prestador de serviços'
+      : tipos[0] === 'freelancer' ? 'freelancer' : 'prestador de serviços';
+    
+    const servicosTexto = categoriasNomes.length === 1
+      ? categoriasNomes[0].toLowerCase()
+      : categoriasNomes.length === 2
+        ? `${categoriasNomes[0].toLowerCase()} e ${categoriasNomes[1].toLowerCase()}`
+        : `${categoriasNomes.slice(0, -1).map(s => s.toLowerCase()).join(', ')} e ${categoriasNomes[categoriasNomes.length - 1].toLowerCase()}`;
+    
+    return `Sou ${tipoTexto} especializado em ${servicosTexto}. Tenho experiência na área e estou sempre disponível para novos projetos. Entre em contato para conhecer melhor meu trabalho!`;
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -73,7 +95,18 @@ export const ProfileForm = ({
           <ToggleGroup 
             type="multiple"
             value={editing ? editData.tipo_profissional || [] : profileData.tipo_profissional || []}
-            onValueChange={(value) => onDataChange({...editData, tipo_profissional: value, categoria_id: ''})}
+            onValueChange={(value) => {
+              const newData = {...editData, tipo_profissional: value, categoria_ids: []};
+              onDataChange(newData);
+              
+              // Gerar nova descrição se houver tipos e categorias selecionadas
+              if (value.length > 0 && (editData.categoria_ids || []).length > 0) {
+                const novaDescricao = gerarDescricaoAutomatica(editData.categoria_ids || [], value);
+                onDataChange({...newData, descricao: novaDescricao});
+              } else if (value.length === 0) {
+                onDataChange({...newData, descricao: ''});
+              }
+            }}
             disabled={!editing}
             className="justify-start gap-2"
           >
@@ -107,7 +140,16 @@ export const ProfileForm = ({
                       type="button"
                       onClick={() => {
                         const newIds = editData.categoria_ids?.filter(catId => catId !== id) || [];
-                        onDataChange({...editData, categoria_ids: newIds});
+                        
+                        // Atualizar descrição após remoção
+                        if (newIds.length > 0 && (editData.tipo_profissional || []).length > 0) {
+                          const novaDescricao = gerarDescricaoAutomatica(newIds, editData.tipo_profissional || []);
+                          onDataChange({...editData, categoria_ids: newIds, descricao: novaDescricao});
+                        } else if (newIds.length === 0) {
+                          onDataChange({...editData, categoria_ids: newIds, descricao: ''});
+                        } else {
+                          onDataChange({...editData, categoria_ids: newIds});
+                        }
                       }}
                       className="ml-1 hover:bg-primary/20 rounded-full p-0.5"
                     >
@@ -156,11 +198,23 @@ export const ProfileForm = ({
                               newIds = [...currentIds, categoria.id];
                             }
                             
-                            onDataChange({
-                              ...editData, 
-                              categoria_ids: newIds,
-                              categoria_id: newIds[0] || ''
-                            });
+                            // Atualizar dados e descrição em uma única chamada
+                            if (newIds.length > 0 && (editData.tipo_profissional || []).length > 0) {
+                              const novaDescricao = gerarDescricaoAutomatica(newIds, editData.tipo_profissional || []);
+                              onDataChange({
+                                ...editData, 
+                                categoria_ids: newIds,
+                                categoria_id: newIds[0] || '',
+                                descricao: novaDescricao
+                              });
+                            } else {
+                              onDataChange({
+                                ...editData, 
+                                categoria_ids: newIds,
+                                categoria_id: newIds[0] || '',
+                                descricao: newIds.length === 0 ? '' : editData.descricao
+                              });
+                            }
                           }}
                           className="cursor-pointer"
                         >
