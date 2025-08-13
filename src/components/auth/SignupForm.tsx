@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { AlertCircle, MapPin, ChevronsUpDown, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPhone } from "@/utils/validation";
@@ -290,26 +290,28 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
               <Command>
                 <CommandInput placeholder="Buscar tipo de serviço..." className="h-10" />
                 <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
-                <CommandGroup>
-                  {categoriasFiltradas.map((categoria) => (
-                    <CommandItem
-                      key={categoria.id}
-                      value={categoria.nome}
-                      onSelect={() => {
-                        updateFormData('categoria_id', categoria.id);
-                        if (!formData.descricao) {
-                          const descricao = gerarDescricaoAutomatica(categoria.id, formData.tipo_profissional);
-                          updateFormData('descricao', descricao);
-                        }
-                        setOpenCategoria(false);
-                      }}
-                      className="cursor-pointer"
-                    >
-                      <Check className={cn("mr-2 h-4 w-4", categoria.id === formData.categoria_id ? "opacity-100" : "opacity-0")} />
-                      {categoria.nome}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
+                <CommandList>
+                  <CommandGroup>
+                    {categoriasFiltradas.map((categoria) => (
+                      <CommandItem
+                        key={categoria.id}
+                        value={categoria.nome}
+                        onSelect={() => {
+                          updateFormData('categoria_id', categoria.id);
+                          if (!formData.descricao) {
+                            const descricao = gerarDescricaoAutomatica(categoria.id, formData.tipo_profissional);
+                            updateFormData('descricao', descricao);
+                          }
+                          setOpenCategoria(false);
+                        }}
+                        className="cursor-pointer"
+                      >
+                        <Check className={cn("mr-2 h-4 w-4", categoria.id === formData.categoria_id ? "opacity-100" : "opacity-0")} />
+                        {categoria.nome}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
               </Command>
             </PopoverContent>
           </Popover>
