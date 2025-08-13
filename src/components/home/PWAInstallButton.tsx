@@ -12,6 +12,8 @@ export const PWAInstallButton = () => {
   const { isInstalled, canInstall } = usePWA();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
+  console.log('PWAInstallButton - isInstalled:', isInstalled, 'canInstall:', canInstall, 'deferredPrompt:', !!deferredPrompt);
+
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
