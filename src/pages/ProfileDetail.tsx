@@ -168,10 +168,20 @@ const ProfileDetail = () => {
                 <div className="flex-1 min-w-0">
                   <h1 className="text-3xl font-bold mb-2">{profile.nome}</h1>
                   
-                  <div className="space-y-2 mb-4">
-                    <p className="text-lg text-muted-foreground">
-                      {profile.categorias.map(cat => cat.nome).join(', ')}
-                    </p>
+                  <div className="space-y-3 mb-4">
+                    {/* Tipos de serviço */}
+                    <div>
+                      <div className="flex flex-wrap gap-2">
+                        {profile.categorias.map((cat, index) => (
+                          <span
+                            key={index}
+                            className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary border border-primary/20"
+                          >
+                            {cat.nome}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                     
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <MapPin className="w-4 h-4" />
