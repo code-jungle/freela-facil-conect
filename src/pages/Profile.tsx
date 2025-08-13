@@ -42,7 +42,8 @@ const Profile = () => {
     try {
       const fotoUrl = await uploadPhoto();
 
-      const { error } = await supabase
+      // Atualizar perfil principal
+      const { error: profileError } = await supabase
         .from('profiles')
         .update({
           nome: editData.nome,
@@ -55,7 +56,28 @@ const Profile = () => {
         })
         .eq('id', profileData.id);
 
-      if (error) throw error;
+      if (profileError) throw profileError;
+
+      // Atualizar categorias múltiplas
+      if (editData.categoria_ids && editData.categoria_ids.length > 0) {
+        // Remover categorias existentes
+        await supabase
+          .from('profile_categorias')
+          .delete()
+          .eq('profile_id', profileData.id);
+
+        // Inserir novas categorias
+        const categoriasToInsert = editData.categoria_ids.map(categoria_id => ({
+          profile_id: profileData.id,
+          categoria_id
+        }));
+
+        const { error: categoriasError } = await supabase
+          .from('profile_categorias')
+          .insert(categoriasToInsert);
+
+        if (categoriasError) throw categoriasError;
+      }
 
       setProfileData({ ...profileData, ...editData, foto_perfil: fotoUrl } as any);
       setEditData({ ...editData, foto_perfil: fotoUrl, foto_perfil_file: null });

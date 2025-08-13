@@ -48,9 +48,30 @@ export const ProfileHeader = ({
         )}
       </div>
       <h1 className="text-2xl font-bold">{profileData.nome}</h1>
-      <p className="text-muted-foreground">
-        {categorias.find(c => c.id === profileData.categoria_id)?.nome} • {profileData.cidade}
-      </p>
+      
+      {/* Exibir todas as categorias selecionadas */}
+      <div className="space-y-2">
+        <div className="flex flex-wrap gap-2 justify-center">
+          {profileData.categoria_ids?.map((categoriaId) => {
+            const categoria = categorias.find(c => c.id === categoriaId);
+            return categoria ? (
+              <span
+                key={categoriaId}
+                className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20"
+              >
+                {categoria.nome}
+              </span>
+            ) : null;
+          }) || (
+            <span className="text-muted-foreground text-sm">
+              {categorias.find(c => c.id === profileData.categoria_id)?.nome}
+            </span>
+          )}
+        </div>
+        <p className="text-muted-foreground text-sm">
+          {profileData.cidade}
+        </p>
+      </div>
     </div>
   );
 };
