@@ -76,7 +76,7 @@ export const ProfileForm = ({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="categoria">Categoria</Label>
+          <Label htmlFor="categoria">Tipo de serviço</Label>
           <Select 
             value={editing ? editData.categoria_id || '' : profileData.categoria_id}
             onValueChange={(value) => onDataChange({...editData, categoria_id: value})}

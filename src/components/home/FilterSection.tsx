@@ -59,13 +59,13 @@ export const FilterSection = ({
             </SelectContent>
           </Select>
 
-          {/* Categoria */}
+          {/* Tipo de serviço */}
           <Select value={selectedCategoria} onValueChange={onCategoriaChange}>
             <SelectTrigger>
-              <SelectValue placeholder="Categoria" />
+              <SelectValue placeholder="Tipo de serviço" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="todas">Todas as categorias</SelectItem>
+              <SelectItem value="todas">Todos os serviços</SelectItem>
               {categoriasFiltradas.map(categoria => (
                 <SelectItem key={categoria.id} value={categoria.id}>
                   {categoria.nome}

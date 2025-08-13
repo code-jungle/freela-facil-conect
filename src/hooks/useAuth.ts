@@ -106,7 +106,7 @@ export const useAuth = (): AuthHookReturn => {
     }
     
     if (!data.categoria_id) {
-      errors.categoria_id = 'Categoria é obrigatória';
+      errors.categoria_id = 'Tipo de serviço é obrigatório';
     }
     
     setValidationErrors(errors);

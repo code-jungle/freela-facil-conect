@@ -98,7 +98,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
             inputMode="email" 
             autoComplete="email" 
             required 
-            className={`h-12 text-base bg-gray-100 ${validationErrors.email ? 'border-red-500 focus:border-red-500' : ''}`}
+            className={`h-12 text-base bg-card text-foreground placeholder:text-foreground ${validationErrors.email ? 'border-red-500 focus:border-red-500' : ''}`}
           />
           {validationErrors.email && (
             <p className="text-sm text-red-500 flex items-center gap-1">
@@ -122,8 +122,8 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
             onBlur={e => onValidateField('password', e.target.value)}
             autoComplete="new-password" 
             required 
-            className={`h-12 text-base bg-gray-100 ${validationErrors.password ? 'border-red-500 focus:border-red-500' : ''}`}
-          />
+            className={`h-12 text-base bg-card text-foreground placeholder:text-foreground ${validationErrors.password ? 'border-red-500 focus:border-red-500' : ''}`}
+           />
           {validationErrors.password && (
             <p className="text-sm text-red-500 flex items-center gap-1">
               <AlertCircle className="w-4 h-4" />
@@ -146,7 +146,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
           onBlur={e => onValidateField('nome', e.target.value)}
           autoComplete="name" 
           required 
-          className={`h-12 text-base bg-gray-100 ${validationErrors.nome ? 'border-red-500 focus:border-red-500' : ''}`}
+          className={`h-12 text-base bg-card text-foreground placeholder:text-foreground ${validationErrors.nome ? 'border-red-500 focus:border-red-500' : ''}`}
         />
         {validationErrors.nome && (
           <p className="text-sm text-red-500 flex items-center gap-1">
@@ -168,7 +168,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
               inputMode="numeric" 
               maxLength={9}
               required 
-              className={`h-12 text-base bg-gray-100 pr-10 ${validationErrors.cep ? 'border-red-500 focus:border-red-500' : ''}`}
+              className={`h-12 text-base bg-card text-foreground placeholder:text-foreground pr-10 ${validationErrors.cep ? 'border-red-500 focus:border-red-500' : ''}`}
             />
             {cepLoading && (
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -198,7 +198,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
             placeholder="(11) 99999-9999" 
             inputMode="tel" 
             required
-            className={`h-12 text-base bg-gray-100 ${validationErrors.whatsapp ? 'border-red-500 focus:border-red-500' : ''}`}
+            className={`h-12 text-base bg-card text-foreground placeholder:text-foreground ${validationErrors.whatsapp ? 'border-red-500 focus:border-red-500' : ''}`}
           />
           {validationErrors.whatsapp && (
             <p className="text-sm text-red-500 flex items-center gap-1">
@@ -224,7 +224,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
             autoComplete="address-level2" 
             required 
             readOnly={!!formData.cep}
-            className={`h-12 text-base bg-gray-100 pr-10 ${validationErrors.cidade ? 'border-red-500 focus:border-red-500' : ''} ${!!formData.cep ? 'cursor-not-allowed opacity-75' : ''}`}
+            className={`h-12 text-base bg-card text-foreground placeholder:text-foreground pr-10 ${validationErrors.cidade ? 'border-red-500 focus:border-red-500' : ''} ${!!formData.cep ? 'cursor-not-allowed opacity-75' : ''}`}
           />
           {formData.cep && (
             <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-500" />
@@ -248,10 +248,10 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
           }} 
           required
         >
-          <SelectTrigger className={`h-12 text-base bg-gray-100 ${validationErrors.tipo_profissional ? 'border-red-500' : ''}`}>
+          <SelectTrigger className={`h-12 text-base bg-card text-foreground ${validationErrors.tipo_profissional ? 'border-red-500' : ''}`}>
             <SelectValue placeholder="Selecione o tipo" />
           </SelectTrigger>
-          <SelectContent className="bg-white">
+          <SelectContent className="bg-card text-foreground">
             <SelectItem value="prestador">Prestação de Serviço</SelectItem>
             <SelectItem value="freelancer">Freelancer</SelectItem>
           </SelectContent>
@@ -266,7 +266,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
 
       {formData.tipo_profissional && (
         <div className="space-y-3">
-          <Label htmlFor="categoria">Categoria</Label>
+          <Label htmlFor="categoria">Tipo de serviço</Label>
           <Select 
             value={formData.categoria_id} 
             onValueChange={value => {
@@ -279,10 +279,10 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
             }} 
             required
           >
-            <SelectTrigger className={`h-12 text-base bg-gray-100 ${validationErrors.categoria_id ? 'border-red-500' : ''}`}>
-              <SelectValue placeholder="Selecione a categoria" />
+            <SelectTrigger className={`h-12 text-base bg-card text-foreground ${validationErrors.categoria_id ? 'border-red-500' : ''}`}>
+              <SelectValue placeholder="Selecione o tipo de serviço" />
             </SelectTrigger>
-            <SelectContent className="bg-white">
+            <SelectContent className="bg-card text-foreground">
               {categoriasFiltradas.map(categoria => (
                 <SelectItem key={categoria.id} value={categoria.id}>
                   {categoria.nome}
@@ -307,7 +307,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
           onChange={e => updateFormData('descricao', e.target.value)}
           placeholder="Conte sobre sua experiência e serviços..." 
           rows={4} 
-          className="text-base resize-none bg-gray-100" 
+          className="text-base resize-none bg-card text-foreground placeholder:text-foreground" 
         />
       </div>
 
