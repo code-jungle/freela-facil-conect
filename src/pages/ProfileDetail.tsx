@@ -131,7 +131,7 @@ const ProfileDetail = () => {
                 Voltar
               </Button>
             </Link>
-            <h1 className="text-2xl font-bold text-foreground">Servix</h1>
+            <h1 className="text-2xl font-normal font-smooch text-foreground">Servix</h1>
             <div className="w-20"></div> {/* Spacer for center alignment */}
           </div>
         </div>

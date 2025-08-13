@@ -217,7 +217,7 @@ const Index = () => {
       </main>
       <footer className="border-t border-border">
         <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
-          Servix © 2025 - Powered by CodeJungle
+          <span className="font-smooch font-normal">Servix</span> © 2025 - Powered by CodeJungle
         </div>
       </footer>
     </div>
