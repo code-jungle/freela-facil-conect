@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Download, X } from 'lucide-react';
+import { Briefcase, X } from 'lucide-react';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -64,7 +64,7 @@ const PWAInstallPrompt = () => {
             onClick={handleInstallClick}
             className="shrink-0"
           >
-            <Download className="w-4 h-4 mr-1" />
+            <Briefcase className="w-4 h-4 mr-1" />
             Instalar
           </Button>
           <Button

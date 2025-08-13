@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Briefcase } from "lucide-react";
 import { usePWA } from "@/hooks/usePWA";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -54,7 +54,7 @@ export const PWAInstallButton = () => {
         size="sm"
         className="mt-2"
       >
-        <Download className="w-4 h-4 mr-2" />
+        <Briefcase className="w-4 h-4 mr-2" />
         Como Instalar
       </Button>
     );
@@ -67,7 +67,7 @@ export const PWAInstallButton = () => {
       size="sm"
       className="mt-2"
     >
-      <Download className="w-4 h-4 mr-2" />
+      <Briefcase className="w-4 h-4 mr-2" />
       Instalar App
     </Button>
   );
