@@ -17,7 +17,7 @@ interface Profile {
   visualizacoes: number;
   categorias: {
     nome: string;
-  };
+  }[];
 }
 
 const ProfileDetail = () => {
@@ -47,8 +47,10 @@ const ProfileDetail = () => {
             whatsapp,
             telefone,
             visualizacoes,
-            categorias (
-              nome
+            profile_categorias!inner (
+              categorias (
+                nome
+              )
             )
           `)
           .eq('id', id)
@@ -58,7 +60,12 @@ const ProfileDetail = () => {
         if (error || !data) {
           setNotFound(true);
         } else {
-          setProfile(data);
+          // Transformar dados para o formato esperado
+          const transformedProfile = {
+            ...data,
+            categorias: data.profile_categorias?.map(pc => pc.categorias).filter(Boolean) || []
+          };
+          setProfile(transformedProfile);
           // Incrementar visualizações
           await supabase
             .from('profiles')
@@ -163,7 +170,7 @@ const ProfileDetail = () => {
                   
                   <div className="space-y-2 mb-4">
                     <p className="text-lg text-muted-foreground">
-                      {profile.categorias.nome}
+                      {profile.categorias.map(cat => cat.nome).join(', ')}
                     </p>
                     
                     <div className="flex items-center gap-2 text-muted-foreground">
@@ -216,9 +223,9 @@ const ProfileDetail = () => {
                   </div>
                   
                   <div className="bg-muted/50 p-4 rounded-lg">
-                    <h3 className="font-medium mb-2">Categoria</h3>
+                    <h3 className="font-medium mb-2">Especialidades</h3>
                     <p className="text-muted-foreground">
-                      {profile.categorias.nome}
+                      {profile.categorias.map(cat => cat.nome).join(', ')}
                     </p>
                   </div>
                 </div>

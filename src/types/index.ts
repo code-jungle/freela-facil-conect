@@ -4,12 +4,12 @@ export interface Profile {
   cidade: string;
   tipo_profissional: string[];
   descricao: string;
-  foto_perfil: string;
+  foto_perfil: string;  
   whatsapp: string;
   telefone: string;
   categorias: {
     nome: string;
-  };
+  }[];
 }
 
 export interface Categoria {

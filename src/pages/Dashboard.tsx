@@ -21,6 +21,7 @@ interface Profile {
   cidade: string;
   tipo_profissional: string[];
   categoria_id: string;
+  categoria_ids: string[];
   descricao: string;
   foto_perfil: string;
   ativo: boolean;
@@ -55,10 +56,15 @@ const Dashboard = () => {
 
       setUser(session.user);
 
-      // Buscar perfil do usuário
+      // Buscar perfil do usuário com suas categorias
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('*')
+        .select(`
+          *,
+          profile_categorias!inner (
+            categoria_id
+          )
+        `)
         .eq('user_id', session.user.id)
         .single();
 
@@ -70,7 +76,12 @@ const Dashboard = () => {
           variant: "destructive",
         });
       } else {
-        setProfile(profileData);
+        // Extrair IDs das categorias
+        const categoria_ids = profileData.profile_categorias?.map(pc => pc.categoria_id) || [];
+        setProfile({
+          ...profileData,
+          categoria_ids
+        });
       }
 
       // Buscar categorias
@@ -110,22 +121,44 @@ const Dashboard = () => {
     setSaving(true);
 
     try {
-      const { error } = await supabase
+      // Atualizar dados básicos do perfil
+      const { error: profileError } = await supabase
         .from('profiles')
         .update({
           nome: profile.nome,
           telefone: profile.telefone,
           whatsapp: profile.whatsapp,
           cidade: profile.cidade,
-            tipo_profissional: profile.tipo_profissional,
-          categoria_id: profile.categoria_id,
+          tipo_profissional: profile.tipo_profissional,
+          categoria_id: profile.categoria_ids[0] || profile.categoria_id, // Manter compatibilidade
           descricao: profile.descricao,
           foto_perfil: profile.foto_perfil,
           ativo: profile.ativo,
         })
         .eq('user_id', user.id);
 
-      if (error) throw error;
+      if (profileError) throw profileError;
+
+      // Atualizar categorias
+      if (profile.categoria_ids && profile.categoria_ids.length > 0) {
+        // Remover categorias existentes
+        await supabase
+          .from('profile_categorias')
+          .delete()
+          .eq('profile_id', profile.id);
+
+        // Inserir novas categorias
+        const categoriasToInsert = profile.categoria_ids.map(categoria_id => ({
+          profile_id: profile.id,
+          categoria_id
+        }));
+
+        const { error: categoriasError } = await supabase
+          .from('profile_categorias')
+          .insert(categoriasToInsert);
+
+        if (categoriasError) throw categoriasError;
+      }
 
       toast({
         title: "Perfil atualizado!",
@@ -146,6 +179,10 @@ const Dashboard = () => {
 
   const categoriasFiltradas = profile?.tipo_profissional && profile.tipo_profissional.length > 0
     ? categorias.filter(c => profile.tipo_profissional.includes(c.tipo_profissional))
+    : [];
+
+  const categoriasDoProfile = profile?.categoria_ids 
+    ? categorias.filter(c => profile.categoria_ids.includes(c.id))
     : [];
 
   if (loading) {
@@ -246,7 +283,7 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {categorias.find(c => c.id === profile.categoria_id)?.nome || 'N/A'}
+                  {categoriasDoProfile.map(c => c.nome).join(', ') || 'N/A'}
                 </div>
                     <p className="text-xs text-muted-foreground capitalize">
                       {profile.tipo_profissional.join(', ')}
@@ -346,23 +383,37 @@ const Dashboard = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="categoria">Categoria</Label>
-                    <Select 
-                      value={profile.categoria_id} 
-                      onValueChange={(value) => setProfile({...profile, categoria_id: value})}
-                      disabled={!editMode}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categoriasFiltradas.map((categoria) => (
-                          <SelectItem key={categoria.id} value={categoria.id}>
-                            {categoria.nome}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="categoria">Especialidades</Label>
+                    <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto border rounded-md p-3 bg-muted/20">
+                      {categoriasFiltradas.map((categoria) => (
+                        <label key={categoria.id} className="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-muted/50">
+                          <input
+                            type="checkbox"
+                            checked={profile.categoria_ids?.includes(categoria.id) || false}
+                            onChange={(e) => {
+                              const isChecked = e.target.checked;
+                              const currentIds = profile.categoria_ids || [];
+                              let newIds;
+                              
+                              if (isChecked) {
+                                newIds = [...currentIds, categoria.id];
+                              } else {
+                                newIds = currentIds.filter(id => id !== categoria.id);
+                              }
+                              
+                              setProfile({
+                                ...profile, 
+                                categoria_ids: newIds,
+                                categoria_id: newIds[0] || '' // Manter compatibilidade
+                              });
+                            }}
+                            disabled={!editMode}
+                            className="rounded border-border"
+                          />
+                          <span className="text-sm">{categoria.nome}</span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
@@ -466,7 +517,7 @@ const Dashboard = () => {
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold truncate">{profile.nome}</h3>
                     <p className="text-sm text-muted-foreground">
-                      {categorias.find(c => c.id === profile.categoria_id)?.nome}
+                      {categoriasDoProfile.map(c => c.nome).join(', ') || 'Nenhuma categoria selecionada'}
                     </p>
                     <p className="text-xs text-muted-foreground">{profile.cidade}</p>
                   </div>

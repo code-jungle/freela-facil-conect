@@ -39,7 +39,7 @@ export const ProfessionalCard = ({
           <div className="flex-1 min-w-0">
             <h3 className="font-bold text-lg truncate mb-1">{profile.nome}</h3>
             <p className="text-sm font-medium text-primary capitalize mb-1">
-              {profile.categorias.nome}
+              {profile.categorias.map(cat => cat.nome).join(', ')}
             </p>
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
               <MapPin className="w-3 h-3" />

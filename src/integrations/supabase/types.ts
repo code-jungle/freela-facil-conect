@@ -80,6 +80,42 @@ export type Database = {
         }
         Relationships: []
       }
+      profile_categorias: {
+        Row: {
+          categoria_id: string
+          created_at: string
+          id: string
+          profile_id: string
+        }
+        Insert: {
+          categoria_id: string
+          created_at?: string
+          id?: string
+          profile_id: string
+        }
+        Update: {
+          categoria_id?: string
+          created_at?: string
+          id?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_categorias_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "categorias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_categorias_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           ativo: boolean

@@ -31,7 +31,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
     whatsapp: "",
     cidade: "",
     tipo_profissional: [],
-    categoria_id: "",
+    categoria_ids: [],
     descricao: "",
     foto_perfil: null
   });
@@ -253,7 +253,7 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
           value={formData.tipo_profissional} 
           onValueChange={(value) => {
             updateFormData('tipo_profissional', value);
-            updateFormData('categoria_id', "");
+            updateFormData('categoria_ids', []);
           }}
           className={`justify-start gap-2 ${validationErrors.tipo_profissional ? 'border border-red-500 rounded-md p-2' : ''}`}
         >
@@ -280,55 +280,43 @@ export const SignupForm = ({ onSubmit, loading, validationErrors, onValidateFiel
 
       {formData.tipo_profissional.length > 0 && (
         <div className="space-y-3">
-          <Label htmlFor="categoria">Tipo de serviço <span className="text-destructive" aria-hidden>*</span></Label>
-          <Popover open={openCategoria} onOpenChange={setOpenCategoria}>
-            <PopoverTrigger asChild>
-              <Button
-                type="button"
-                variant="outline"
-                role="combobox"
-                aria-expanded={openCategoria}
-                className={`w-full justify-between h-12 input-surface text-foreground ${validationErrors.categoria_id ? 'border-red-500' : ''}`}
-              >
-                {formData.categoria_id
-                  ? (categorias.find(c => c.id === formData.categoria_id)?.nome || 'Selecionado')
-                  : 'Selecione o tipo de serviço'}
-                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-card text-foreground z-[80]" align="start">
-              <Command>
-                <CommandInput placeholder="Buscar tipo de serviço..." className="h-10" />
-                <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
-                <CommandList>
-                  <CommandGroup>
-                    {categoriasFiltradas.map((categoria) => (
-                      <CommandItem
-                        key={categoria.id}
-                        value={categoria.nome}
-                        onSelect={() => {
-                          updateFormData('categoria_id', categoria.id);
-                          if (!formData.descricao) {
-                            const descricao = gerarDescricaoAutomatica(categoria.id, formData.tipo_profissional);
-                            updateFormData('descricao', descricao);
-                          }
-                          setOpenCategoria(false);
-                        }}
-                        className="cursor-pointer"
-                      >
-                        <Check className={cn("mr-2 h-4 w-4", categoria.id === formData.categoria_id ? "opacity-100" : "opacity-0")} />
-                        {categoria.nome}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-          {validationErrors.categoria_id && (
+          <Label htmlFor="categoria">Tipos de serviço <span className="text-destructive" aria-hidden>*</span></Label>
+          <p className="text-sm text-muted-foreground mb-2">Selecione uma ou mais categorias:</p>
+          <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto border rounded-md p-3 bg-muted/20">
+            {categoriasFiltradas.map((categoria) => (
+              <label key={categoria.id} className="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-muted/50">
+                <input
+                  type="checkbox"
+                  checked={formData.categoria_ids.includes(categoria.id)}
+                  onChange={(e) => {
+                    const isChecked = e.target.checked;
+                    const currentIds = formData.categoria_ids;
+                    let newIds;
+                    
+                    if (isChecked) {
+                      newIds = [...currentIds, categoria.id];
+                    } else {
+                      newIds = currentIds.filter(id => id !== categoria.id);
+                    }
+                    
+                    updateFormData('categoria_ids', newIds);
+                    
+                    // Atualizar descrição automaticamente apenas se vazia
+                    if (!formData.descricao && newIds.length > 0) {
+                      const descricao = gerarDescricaoAutomatica(newIds[0], formData.tipo_profissional);
+                      updateFormData('descricao', descricao);
+                    }
+                  }}
+                  className="rounded border-border"
+                />
+                <span className="text-sm">{categoria.nome}</span>
+              </label>
+            ))}
+          </div>
+          {validationErrors.categoria_ids && (
             <p className="text-sm text-red-500 flex items-center gap-1">
               <AlertCircle className="w-4 h-4" />
-              {validationErrors.categoria_id}
+              {validationErrors.categoria_ids}
             </p>
           )}
         </div>

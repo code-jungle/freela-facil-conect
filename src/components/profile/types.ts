@@ -12,10 +12,12 @@ export interface ProfileData {
   cidade: string;
   tipo_profissional: string[];
   categoria_id: string;
+  categoria_ids?: string[];
   descricao: string | null;
   foto_perfil: string | null;
 }
 
 export interface EditData extends Partial<ProfileData> {
   foto_perfil_file?: File | null;
+  categoria_ids?: string[];
 }

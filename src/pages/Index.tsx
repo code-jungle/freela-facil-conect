@@ -45,7 +45,7 @@ const Index = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Buscar perfis ativos
+        // Buscar perfis ativos com suas categorias
         const {
           data: profilesData,
           error: profilesError
@@ -58,11 +58,19 @@ const Index = () => {
             foto_perfil,
             whatsapp,
             telefone,
-            categorias (
-              nome
+            profile_categorias!inner (
+              categorias (
+                nome
+              )
             )
           `).eq('ativo', true);
         if (profilesError) throw profilesError;
+
+        // Transformar dados para o formato esperado
+        const transformedProfiles = profilesData?.map(profile => ({
+          ...profile,
+          categorias: profile.profile_categorias?.map(pc => pc.categorias).filter(Boolean) || []
+        })) || [];
 
         // Buscar categorias
         const {
@@ -70,12 +78,12 @@ const Index = () => {
           error: categoriasError
         } = await supabase.from('categorias').select('*').order('nome');
         if (categoriasError) throw categoriasError;
-        setProfiles(profilesData || []);
-        setFilteredProfiles(profilesData || []);
+        setProfiles(transformedProfiles);
+        setFilteredProfiles(transformedProfiles);
         setCategorias(categoriasData || []);
 
         // Extrair cidades únicas (filtrando valores vazios)
-        const cidadesUnicas = [...new Set(profilesData?.map(p => p.cidade).filter(cidade => cidade && cidade.trim() !== ""))].sort();
+        const cidadesUnicas = [...new Set(transformedProfiles?.map(p => p.cidade).filter(cidade => cidade && cidade.trim() !== ""))].sort();
         setCidades(cidadesUnicas);
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
@@ -114,7 +122,7 @@ const Index = () => {
       if (searchTerm) {
         filtered = filtered.filter(profile => 
           profile.nome?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-          profile.categorias?.nome?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+          profile.categorias?.some(cat => cat.nome?.toLowerCase().includes(searchTerm.toLowerCase())) || 
           profile.cidade?.toLowerCase().includes(searchTerm.toLowerCase()) || 
           profile.descricao?.toLowerCase().includes(searchTerm.toLowerCase())
         );
@@ -129,7 +137,9 @@ const Index = () => {
       if (selectedCategoria !== "todas") {
         const categoria = categorias.find(c => c.id === selectedCategoria);
         if (categoria) {
-          filtered = filtered.filter(profile => profile.categorias.nome === categoria.nome);
+          filtered = filtered.filter(profile => 
+            profile.categorias.some(cat => cat.nome === categoria.nome)
+          );
         }
       }
 

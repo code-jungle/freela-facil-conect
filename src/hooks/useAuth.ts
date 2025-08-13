@@ -105,8 +105,8 @@ export const useAuth = (): AuthHookReturn => {
       errors.tipo_profissional = 'Pelo menos um tipo de profissional é obrigatório';
     }
     
-    if (!data.categoria_id) {
-      errors.categoria_id = 'Tipo de serviço é obrigatório';
+    if (!data.categoria_ids || data.categoria_ids.length === 0) {
+      errors.categoria_ids = 'Pelo menos um tipo de serviço é obrigatório';
     }
     
     setValidationErrors(errors);
@@ -159,7 +159,7 @@ export const useAuth = (): AuthHookReturn => {
         whatsapp: data.whatsapp,
         cidade: data.cidade,
         tipo_profissional: data.tipo_profissional,
-        categoria_id: data.categoria_id
+        categoria_ids: data.categoria_ids
       });
 
       const signupOperation = async () => {
@@ -175,7 +175,7 @@ export const useAuth = (): AuthHookReturn => {
                 whatsapp: data.whatsapp.replace(/\D/g, ''),
                 cidade: data.cidade.trim(),
                 tipo_profissional: data.tipo_profissional,
-                categoria_id: data.categoria_id,
+                categoria_ids: data.categoria_ids,
                 descricao: data.descricao.trim(),
                 foto_perfil: ""
               }
