@@ -24,6 +24,8 @@ const Profile = () => {
     setProfileData,
     editData,
     setEditData,
+    openCategoria,
+    setOpenCategoria,
     handleLogout,
   } = useProfileData();
 
@@ -83,6 +85,7 @@ const Profile = () => {
       setEditData({ ...editData, foto_perfil: fotoUrl, foto_perfil_file: null });
       clearPhotoPreview();
       setEditing(false);
+      setOpenCategoria(false);
       
       toast({
         title: "Perfil atualizado!",
@@ -103,6 +106,7 @@ const Profile = () => {
     setEditing(false);
     setEditData(profileData || {});
     clearPhotoPreview();
+    setOpenCategoria(false);
   };
 
   if (loading) {
@@ -181,6 +185,8 @@ const Profile = () => {
               editData={editData}
               categorias={categorias}
               onDataChange={setEditData}
+              openCategoria={openCategoria}
+              setOpenCategoria={setOpenCategoria}
             />
 
             <PhotoUpload

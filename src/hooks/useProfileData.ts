@@ -13,6 +13,7 @@ export const useProfileData = () => {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [editData, setEditData] = useState<EditData>({});
+  const [openCategoria, setOpenCategoria] = useState(false);
 
   // Check authentication and fetch data
   useEffect(() => {
@@ -116,6 +117,8 @@ export const useProfileData = () => {
     setProfileData,
     editData,
     setEditData,
+    openCategoria,
+    setOpenCategoria,
     handleLogout,
   };
 };
