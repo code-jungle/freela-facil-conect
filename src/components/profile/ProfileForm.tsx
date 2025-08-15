@@ -29,9 +29,15 @@ export const ProfileForm = ({
   openCategoria = false,
   setOpenCategoria = () => {}
 }: ProfileFormProps) => {
+  // Debug logs
+  console.log('ProfileForm - categorias:', categorias);
+  console.log('ProfileForm - editData.tipo_profissional:', editData.tipo_profissional);
+  
   const categoriasFiltradas = (editData.tipo_profissional && editData.tipo_profissional.length > 0)
     ? categorias.filter(c => editData.tipo_profissional!.includes(c.tipo_profissional))
     : [];
+    
+  console.log('ProfileForm - categoriasFiltradas:', categoriasFiltradas);
 
   const gerarDescricaoAutomatica = (categoriaIds: string[], tipos: string[]) => {
     if (categoriaIds.length === 0 || tipos.length === 0) return "";
